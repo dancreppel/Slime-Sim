@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
   const element = document.createElement('h1');
-  element.innerHTML = "Hello Gilbert"
+  element.innerHTML = "Hello World"
   document.body.appendChild(element);
 });
