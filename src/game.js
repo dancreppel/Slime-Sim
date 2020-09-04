@@ -10,8 +10,6 @@ export default class Game {
     this.moveDirX = 0;
     this.moveDirY = 0;
 
-    this.createPlayer();
-    this.generateEntities();
   }
 
   createPlayer () {
@@ -42,14 +40,20 @@ export default class Game {
   }
 
   render (ctx) {
-    this.player.draw();
-    this.rock.draw();
+    ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
+    this.player.draw(ctx);
+    this.rock.draw(ctx);
   }
 
   start () {
-    // refresh 60 times per second
-    setInterval(() => this.render(), 16.667)
     this.setKeyBinds();
+    this.createPlayer();
+    this.generateEntities();
+    // refresh 60 times per second
+    setInterval(() => {
+      this.render(this.ctx);
+      this.moveEntities();
+    }, 16.667)
   }
 
   setKeyBinds () {
@@ -57,17 +61,17 @@ export default class Game {
     document.addEventListener('keydown', e => {
       e.preventDefault();
       switch (e.key) {
-        case ArrowUp:
-          this.moveDirY = 1;
+        case 'ArrowUp':
+          this.moveDirY = 10;
           break;
-        case ArrowDown:
-          this.moveDirY = -1;
+        case 'ArrowDown':
+          this.moveDirY = -10;
           break;
-        case ArrowLeft:
-          this.moveDirX = -1;
+        case 'ArrowLeft':
+          this.moveDirX = 10;
           break;
-        case ArrowRight:
-          this.moveDirX = 1;
+        case 'ArrowRight':
+          this.moveDirX = -10;
           break;
         default:
           break;
@@ -79,9 +83,9 @@ export default class Game {
       e.preventDefault();
       const horKeys = ['ArrowLeft', 'ArrowRight'];
       const verKeys = ['ArrowUp', 'ArrowDown']; 
-      debugger;
+
       if (horKeys.includes(e.key)) {
-        this.moveDirY = 0;
+        this.moveDirX = 0;
       }
 
       if (verKeys.includes(e.key)) {
