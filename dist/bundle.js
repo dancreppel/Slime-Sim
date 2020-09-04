@@ -86,6 +86,55 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/creature.js":
+/*!*************************!*\
+  !*** ./src/creature.js ***!
+  \*************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Creature; });
+/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var Creature = /*#__PURE__*/function (_Entity) {
+  _inherits(Creature, _Entity);
+
+  var _super = _createSuper(Creature);
+
+  function Creature(options) {
+    _classCallCheck(this, Creature);
+
+    return _super.call(this, options);
+  }
+
+  return Creature;
+}(_entity__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./src/entity.js":
 /*!***********************!*\
   !*** ./src/entity.js ***!
@@ -134,6 +183,151 @@ var Entity = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./src/game.js":
+/*!*********************!*\
+  !*** ./src/game.js ***!
+  \*********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Game; });
+/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
+/* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+var Game = /*#__PURE__*/function () {
+  function Game(options) {
+    _classCallCheck(this, Game);
+
+    this.DIM_X = options.DIM_X;
+    this.DIM_Y = options.DIM_Y;
+    this.ctx = options.ctx;
+    this.entities = [];
+    this.moveDirX = 0;
+    this.moveDirY = 0;
+  }
+
+  _createClass(Game, [{
+    key: "createPlayer",
+    value: function createPlayer() {
+      // center pos in the middle of the canvas object
+      var pos = [this.DIM_X / 2, this.DIM_Y / 2];
+      this.player = new _slime__WEBPACK_IMPORTED_MODULE_1__["default"]({
+        pos: pos,
+        dim: [20, 20],
+        src: "assets/sprites/test-slime.png"
+      });
+      this.entities.push(this.player);
+    }
+  }, {
+    key: "generateMap",
+    value: function generateMap() {}
+  }, {
+    key: "generateEntities",
+    value: function generateEntities() {
+      // * For testing
+      this.rock = new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+        pos: [0, 0],
+        dim: [200, 150],
+        src: 'assets/sprites/rock.jpg'
+      });
+      this.entities.push(this.rock);
+    }
+  }, {
+    key: "render",
+    value: function render(ctx) {
+      ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
+      this.player.draw(ctx);
+      this.rock.draw(ctx);
+    }
+  }, {
+    key: "start",
+    value: function start() {
+      var _this = this;
+
+      this.setKeyBinds();
+      this.createPlayer();
+      this.generateEntities(); // refresh 60 times per second
+
+      setInterval(function () {
+        _this.render(_this.ctx);
+
+        _this.moveEntities();
+      }, 16.667);
+    }
+  }, {
+    key: "setKeyBinds",
+    value: function setKeyBinds() {
+      var _this2 = this;
+
+      // handle keydownfor arrow keys
+      document.addEventListener('keydown', function (e) {
+        e.preventDefault();
+
+        switch (e.key) {
+          case 'ArrowUp':
+            _this2.moveDirY = 10;
+            break;
+
+          case 'ArrowDown':
+            _this2.moveDirY = -10;
+            break;
+
+          case 'ArrowLeft':
+            _this2.moveDirX = 10;
+            break;
+
+          case 'ArrowRight':
+            _this2.moveDirX = -10;
+            break;
+
+          default:
+            break;
+        }
+      }); // handle keyup for arrow keys
+
+      document.addEventListener('keyup', function (e) {
+        e.preventDefault();
+        var horKeys = ['ArrowLeft', 'ArrowRight'];
+        var verKeys = ['ArrowUp', 'ArrowDown'];
+
+        if (horKeys.includes(e.key)) {
+          _this2.moveDirX = 0;
+        }
+
+        if (verKeys.includes(e.key)) {
+          _this2.moveDirY = 0;
+        }
+      });
+    }
+  }, {
+    key: "moveEntities",
+    value: function moveEntities() {
+      var _this3 = this;
+
+      // * testing
+      this.entities.forEach(function (entity) {
+        entity.move(_this3.moveDirX, _this3.moveDirY);
+      });
+    }
+  }]);
+
+  return Game;
+}();
+
+
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -144,23 +338,127 @@ var Entity = /*#__PURE__*/function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./game */ "./src/game.js");
+
 
 document.addEventListener("DOMContentLoaded", function () {
   var canvas = document.getElementById('canvas');
   var DIM_X = 1200;
   var DIM_Y = 900;
+  var ctx = canvas.getContext('2d');
   canvas.width = DIM_X;
-  canvas.height = DIM_Y;
-  window.ctx = canvas.getContext('2d');
-  var rock = new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-    pos: [550, 500],
-    dim: [200, 150],
-    src: 'assets/sprites/rock.jpg'
+  canvas.height = DIM_Y; // let rock = new Entity({ 
+  //   pos: [550, 500], 
+  //   dim: [200, 150],
+  //   src: 'assets/sprites/rock.jpg' });
+  // window.rock = rock;
+  // let moveDirX = 0;
+  // let moveDirY = 0;
+
+  var game = new _game__WEBPACK_IMPORTED_MODULE_1__["default"]({
+    DIM_X: DIM_X,
+    DIM_Y: DIM_Y,
+    ctx: ctx
   });
-  window.rock = rock; // const img = new Image();
+  game.start(); // document.addEventListener('keydown', e => {
+  //   switch (e.key) {
+  //     case 'ArrowUp':
+  //       moveDirY = 1;
+  //       console.log(moveDirY);
+  //       return;
+  //     case 'ArrowDown':
+  //       moveDirY = -1;
+  //       console.log(moveDirY);
+  //       return;
+  //     case 'ArrowLeft':
+  //       moveDirX = -1;
+  //       console.log(moveDirX);
+  //       return;
+  //     case 'ArrowRight':
+  //       moveDirX = 1;
+  //       console.log(moveDirX);
+  //       return;
+  //     default:
+  //       return;
+  //   }
+  // })
+  // document.addEventListener('keyup', e => {
+  //   e.preventDefault();
+  //   const horKeys = ['ArrowLeft', 'ArrowRight'];
+  //   const verKeys = ['ArrowUp', 'ArrowDown'];
+  //   if (horKeys.includes(e.key)) {
+  //     moveDirX = 0;
+  //     console.log(moveDirX);
+  //   }
+  //   if (verKeys.includes(e.key)) {
+  //     moveDirY = 0;
+  //     console.log(moveDirY);
+  //   }
+  // })
+  // const img = new Image();
   // img.onload = () => ctx.drawImage(img, 50, 50);
   // img.src = 'assets/sprites/rock.jpg';
 });
+
+/***/ }),
+
+/***/ "./src/slime.js":
+/*!**********************!*\
+  !*** ./src/slime.js ***!
+  \**********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Slime; });
+/* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var Slime = /*#__PURE__*/function (_Creature) {
+  _inherits(Slime, _Creature);
+
+  var _super = _createSuper(Slime);
+
+  function Slime(options) {
+    _classCallCheck(this, Slime);
+
+    return _super.call(this, options);
+  }
+
+  _createClass(Slime, [{
+    key: "move",
+    value: function move() {// Do nothing because the player should be in the center of the frame of
+      // reference
+    }
+  }]);
+
+  return Slime;
+}(_creature__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ })
 
