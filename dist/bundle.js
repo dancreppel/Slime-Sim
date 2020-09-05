@@ -160,7 +160,9 @@ var Entity = /*#__PURE__*/function () {
 
     this.dim = options.dim;
     this.image = new Image();
-    this.image.src = options.src;
+    this.image.src = options.src; // Instantiate hitbox
+
+    this.hitbox();
   }
 
   _createClass(Entity, [{
@@ -173,7 +175,29 @@ var Entity = /*#__PURE__*/function () {
     value: function move(dx, dy) {
       this.pos[0] += dx;
       this.pos[1] += dy;
+      this.hitbox();
     }
+  }, {
+    key: "hitbox",
+    value: function hitbox() {
+      var _this = this;
+
+      this.hitboxCenter = [];
+      this.pos.forEach(function (_, i) {
+        return _this.hitboxCenter.push(_this.pos[i] + _this.dim[i] / 2);
+      }); // this.hitboxCenter = [this.pos[0] + this.dim[0] / 2, this.pos[1] + this.dim[1] / 2];
+      // if (this.dim[0] > this.dim[1]) this.hitboxRadius = this.dim[0] / 2;
+
+      this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+      var canvas = document.getElementById('canvas');
+      var ctx = canvas.getContext('2d');
+      ctx.beginPath();
+      ctx.arc(this.hitboxCenter[0], this.hitboxCenter[1], this.hitboxRadius, 0, 2 * Math.PI, false);
+      ctx.stroke();
+    }
+  }, {
+    key: "collision",
+    value: function collision() {}
   }]);
 
   return Entity;
@@ -236,7 +260,7 @@ var Game = /*#__PURE__*/function () {
     value: function generateEntities() {
       // * For testing
       this.rock = new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-        pos: [0, 0],
+        pos: [500, 500],
         dim: [200, 150],
         src: 'assets/sprites/rock.jpg'
       });
@@ -246,8 +270,9 @@ var Game = /*#__PURE__*/function () {
     key: "render",
     value: function render(ctx) {
       ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
-      this.player.draw(ctx);
-      this.rock.draw(ctx);
+      this.entities.forEach(function (entity) {
+        return entity.draw(ctx);
+      });
     }
   }, {
     key: "start",
@@ -255,8 +280,9 @@ var Game = /*#__PURE__*/function () {
       var _this = this;
 
       this.setKeyBinds();
+      this.generateEntities();
       this.createPlayer();
-      this.generateEntities(); // refresh 60 times per second
+      debugger; // refresh 60 times per second
 
       setInterval(function () {
         _this.render(_this.ctx);
@@ -347,57 +373,13 @@ document.addEventListener("DOMContentLoaded", function () {
   var DIM_Y = 900;
   var ctx = canvas.getContext('2d');
   canvas.width = DIM_X;
-  canvas.height = DIM_Y; // let rock = new Entity({ 
-  //   pos: [550, 500], 
-  //   dim: [200, 150],
-  //   src: 'assets/sprites/rock.jpg' });
-  // window.rock = rock;
-  // let moveDirX = 0;
-  // let moveDirY = 0;
-
+  canvas.height = DIM_Y;
   var game = new _game__WEBPACK_IMPORTED_MODULE_1__["default"]({
     DIM_X: DIM_X,
     DIM_Y: DIM_Y,
     ctx: ctx
   });
-  game.start(); // document.addEventListener('keydown', e => {
-  //   switch (e.key) {
-  //     case 'ArrowUp':
-  //       moveDirY = 1;
-  //       console.log(moveDirY);
-  //       return;
-  //     case 'ArrowDown':
-  //       moveDirY = -1;
-  //       console.log(moveDirY);
-  //       return;
-  //     case 'ArrowLeft':
-  //       moveDirX = -1;
-  //       console.log(moveDirX);
-  //       return;
-  //     case 'ArrowRight':
-  //       moveDirX = 1;
-  //       console.log(moveDirX);
-  //       return;
-  //     default:
-  //       return;
-  //   }
-  // })
-  // document.addEventListener('keyup', e => {
-  //   e.preventDefault();
-  //   const horKeys = ['ArrowLeft', 'ArrowRight'];
-  //   const verKeys = ['ArrowUp', 'ArrowDown'];
-  //   if (horKeys.includes(e.key)) {
-  //     moveDirX = 0;
-  //     console.log(moveDirX);
-  //   }
-  //   if (verKeys.includes(e.key)) {
-  //     moveDirY = 0;
-  //     console.log(moveDirY);
-  //   }
-  // })
-  // const img = new Image();
-  // img.onload = () => ctx.drawImage(img, 50, 50);
-  // img.src = 'assets/sprites/rock.jpg';
+  game.start();
 });
 
 /***/ }),
@@ -450,8 +432,11 @@ var Slime = /*#__PURE__*/function (_Creature) {
 
   _createClass(Slime, [{
     key: "move",
-    value: function move() {// Do nothing because the player should be in the center of the frame of
+    value: function move() {
+      // Do not move because the player should be in the center of the frame of
       // reference
+      // ! hit box for testing
+      this.hitbox();
     }
   }]);
 
