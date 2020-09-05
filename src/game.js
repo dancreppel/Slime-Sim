@@ -31,7 +31,7 @@ export default class Game {
   generateEntities () {
     // * For testing
     this.rock = new Entity ({
-      pos: [0, 0],
+      pos: [500, 500],
       dim: [200, 150],
       src: 'assets/sprites/rock.jpg'
     });
@@ -41,14 +41,14 @@ export default class Game {
 
   render (ctx) {
     ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
-    this.player.draw(ctx);
-    this.rock.draw(ctx);
+    this.entities.forEach(entity => entity.draw(ctx));
   }
 
   start () {
     this.setKeyBinds();
-    this.createPlayer();
     this.generateEntities();
+    this.createPlayer();
+    debugger;
     // refresh 60 times per second
     setInterval(() => {
       this.render(this.ctx);
