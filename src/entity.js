@@ -33,7 +33,9 @@ export default class Entity {
     );
     // this.hitboxCenter = [this.pos[0] + this.dim[0] / 2, this.pos[1] + this.dim[1] / 2];
     // if (this.dim[0] > this.dim[1]) this.hitboxRadius = this.dim[0] / 2;
-    this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0]/2 : this.dim[1]/2;
+    this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+
+    // ! for testing
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     ctx.beginPath();
@@ -42,6 +44,6 @@ export default class Entity {
   }
 
   collision () {
-
+    
   }
 }
