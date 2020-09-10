@@ -8,7 +8,9 @@ export default class Entity {
     this.image.src = options.src;
 
     // Instantiate hitbox
-    this.hitbox();
+    this.hitboxCenter = this.hitboxCenter();
+    this.hitboxRadius = this.hitboxRadius();
+    // this.hitbox();
   }
 
   draw (ctx) {
@@ -23,27 +25,39 @@ export default class Entity {
   move (dx, dy) {
     this.pos[0] += dx;
     this.pos[1] += dy;
-    this.hitbox();
-  }
-
-  hitbox () {
-    this.hitboxCenter = [];
-    this.pos.forEach((_, i) =>
-      this.hitboxCenter.push(this.pos[i] + this.dim[i] / 2)
-    );
-    // this.hitboxCenter = [this.pos[0] + this.dim[0] / 2, this.pos[1] + this.dim[1] / 2];
-    // if (this.dim[0] > this.dim[1]) this.hitboxRadius = this.dim[0] / 2;
-    this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+    this.hitboxCenter[0] += dx;
+    this.hitboxCenter[1] += dy;
 
     // ! for testing
+    this.drawHitbox();
+  }
+
+  hitboxCenter () {
+    let hitboxCenter = this.pos.map((_, i) => this.pos[i] + this.dim[i] / 2 );
+    return hitboxCenter;
+  }
+
+  hitboxRadius () {
+    return this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+  }
+
+  // ! for testing
+  drawHitbox () {
+    // this.hitboxCenter = [];
+    // this.pos.forEach((_, i) =>
+    //   this.hitboxCenter.push(this.pos[i] + this.dim[i] / 2)
+    // );
+    // // this.hitboxCenter = [this.pos[0] + this.dim[0] / 2, this.pos[1] + this.dim[1] / 2];
+    // // if (this.dim[0] > this.dim[1]) this.hitboxRadius = this.dim[0] / 2;
+    // this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+
+    // // ! for testing
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     ctx.beginPath();
     ctx.arc(this.hitboxCenter[0], this.hitboxCenter[1], this.hitboxRadius, 0, 2 * Math.PI, false);
     ctx.stroke();
-  }
 
-  collision () {
-    
+    return true;
   }
 }
