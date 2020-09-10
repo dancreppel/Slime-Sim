@@ -129,7 +129,11 @@ var Creature = /*#__PURE__*/function (_Entity) {
   function Creature(options) {
     _classCallCheck(this, Creature);
 
-    return _super.call(this, options);
+    return _super.call(this, options); // this.pos
+    // this.dim
+    // this.image
+    // this.hitboxCenter
+    // this.hitboxRadius
   }
 
   _createClass(Creature, [{
@@ -138,7 +142,16 @@ var Creature = /*#__PURE__*/function (_Entity) {
       // Do not move because the player should be in the center of the frame of
       // reference
       // ! hit box for testing
-      this.hitbox();
+      this.drawHitbox();
+    }
+  }, {
+    key: "isCollision",
+    value: function isCollision(entity) {
+      var dx = this.hitboxCenter[0] - entity.hitboxCenter[0];
+      var dy = this.hitboxCenter[1] - entity.hitboxCenter[1];
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var minDistance = this.hitboxRadius + entity.hitboxRadius;
+      if (distance < minDistance) return true;else return false;
     }
   }]);
 
@@ -176,7 +189,8 @@ var Entity = /*#__PURE__*/function () {
     this.image = new Image();
     this.image.src = options.src; // Instantiate hitbox
 
-    this.hitbox();
+    this.hitboxCenter = this.hitboxCenter();
+    this.hitboxRadius = this.hitboxRadius(); // this.hitbox();
   }
 
   _createClass(Entity, [{
@@ -189,30 +203,45 @@ var Entity = /*#__PURE__*/function () {
     value: function move(dx, dy) {
       this.pos[0] += dx;
       this.pos[1] += dy;
-      this.hitbox();
+      this.hitboxCenter[0] += dx;
+      this.hitboxCenter[1] += dy; // ! for testing
+
+      this.drawHitbox();
     }
   }, {
-    key: "hitbox",
-    value: function hitbox() {
+    key: "hitboxCenter",
+    value: function hitboxCenter() {
       var _this = this;
 
-      this.hitboxCenter = [];
-      this.pos.forEach(function (_, i) {
-        return _this.hitboxCenter.push(_this.pos[i] + _this.dim[i] / 2);
-      }); // this.hitboxCenter = [this.pos[0] + this.dim[0] / 2, this.pos[1] + this.dim[1] / 2];
-      // if (this.dim[0] > this.dim[1]) this.hitboxRadius = this.dim[0] / 2;
+      var hitboxCenter = this.pos.map(function (_, i) {
+        return _this.pos[i] + _this.dim[i] / 2;
+      });
+      return hitboxCenter;
+    }
+  }, {
+    key: "hitboxRadius",
+    value: function hitboxRadius() {
+      return this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+    } // ! for testing
 
-      this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2; // ! for testing
-
+  }, {
+    key: "drawHitbox",
+    value: function drawHitbox() {
+      // this.hitboxCenter = [];
+      // this.pos.forEach((_, i) =>
+      //   this.hitboxCenter.push(this.pos[i] + this.dim[i] / 2)
+      // );
+      // // this.hitboxCenter = [this.pos[0] + this.dim[0] / 2, this.pos[1] + this.dim[1] / 2];
+      // // if (this.dim[0] > this.dim[1]) this.hitboxRadius = this.dim[0] / 2;
+      // this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+      // // ! for testing
       var canvas = document.getElementById('canvas');
       var ctx = canvas.getContext('2d');
       ctx.beginPath();
       ctx.arc(this.hitboxCenter[0], this.hitboxCenter[1], this.hitboxRadius, 0, 2 * Math.PI, false);
       ctx.stroke();
+      return true;
     }
-  }, {
-    key: "collision",
-    value: function collision() {}
   }]);
 
   return Entity;
@@ -296,13 +325,14 @@ var Game = /*#__PURE__*/function () {
 
       this.setKeyBinds();
       this.generateEntities();
-      this.createPlayer();
-      debugger; // refresh 60 times per second
+      this.createPlayer(); // refresh 60 times per second
 
       setInterval(function () {
         _this.render(_this.ctx);
 
         _this.moveEntities();
+
+        _this.player.isCollision(_this.rock);
       }, 16.667);
     }
   }, {
@@ -414,6 +444,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
@@ -440,6 +474,16 @@ var Slime = /*#__PURE__*/function (_Creature) {
 
     return _super.call(this, options);
   }
+
+  _createClass(Slime, [{
+    key: "move",
+    value: function move() {
+      // Do not move because the player should be in the center of the frame of
+      // reference
+      // ! hit box for testing
+      this.drawHitbox();
+    }
+  }]);
 
   return Slime;
 }(_creature__WEBPACK_IMPORTED_MODULE_0__["default"]);

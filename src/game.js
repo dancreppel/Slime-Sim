@@ -48,11 +48,11 @@ export default class Game {
     this.setKeyBinds();
     this.generateEntities();
     this.createPlayer();
-    debugger;
     // refresh 60 times per second
     setInterval(() => {
       this.render(this.ctx);
       this.moveEntities();
+      this.player.isCollision(this.rock);
     }, 16.667)
   }
 
