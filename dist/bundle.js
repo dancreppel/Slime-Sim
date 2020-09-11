@@ -138,20 +138,8 @@ var Creature = /*#__PURE__*/function (_Entity) {
 
   _createClass(Creature, [{
     key: "move",
-    value: function move() {
-      // Do not move because the player should be in the center of the frame of
+    value: function move() {// Do not move because the player should be in the center of the frame of
       // reference
-      // ! hit box for testing
-      this.drawHitbox();
-    }
-  }, {
-    key: "isCollision",
-    value: function isCollision(entity) {
-      var dx = this.hitboxCenter[0] - entity.hitboxCenter[0];
-      var dy = this.hitboxCenter[1] - entity.hitboxCenter[1];
-      var distance = Math.sqrt(dx * dx + dy * dy);
-      var minDistance = this.hitboxRadius + entity.hitboxRadius;
-      if (distance < minDistance) return true;else return false;
     }
   }]);
 
@@ -190,13 +178,14 @@ var Entity = /*#__PURE__*/function () {
     this.image.src = options.src; // Instantiate hitbox
 
     this.hitboxCenter = this.hitboxCenter();
-    this.hitboxRadius = this.hitboxRadius(); // this.hitbox();
+    this.hitboxRadius = this.hitboxRadius();
   }
 
   _createClass(Entity, [{
     key: "draw",
     value: function draw(ctx) {
-      ctx.drawImage(this.image, this.pos[0], this.pos[1], this.dim[0], this.dim[1]);
+      ctx.drawImage(this.image, this.pos[0], this.pos[1], this.dim[0], this.dim[1]); // // ! for testing
+      // this.drawHitbox();
     }
   }, {
     key: "move",
@@ -204,9 +193,15 @@ var Entity = /*#__PURE__*/function () {
       this.pos[0] += dx;
       this.pos[1] += dy;
       this.hitboxCenter[0] += dx;
-      this.hitboxCenter[1] += dy; // ! for testing
+      this.hitboxCenter[1] += dy;
 
-      this.drawHitbox();
+      if (this.isCollision(arguments.length <= 2 ? undefined : arguments[2])) {
+        // undo move with a little bounce back
+        this.pos[0] -= 1.1 * dx;
+        this.pos[1] -= 1.1 * dy;
+        this.hitboxCenter[0] -= 1.1 * dx;
+        this.hitboxCenter[1] -= 1.1 * dy;
+      }
     }
   }, {
     key: "hitboxCenter",
@@ -221,26 +216,32 @@ var Entity = /*#__PURE__*/function () {
   }, {
     key: "hitboxRadius",
     value: function hitboxRadius() {
-      return this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
-    } // ! for testing
+      return this.dim[0] < this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
+    } // // ! for testing
+    // drawHitbox() {
+    //   const canvas = document.getElementById("canvas");
+    //   const ctx = canvas.getContext("2d");
+    //   ctx.beginPath();
+    //   ctx.arc(
+    //     this.hitboxCenter[0],
+    //     this.hitboxCenter[1],
+    //     this.hitboxRadius,
+    //     0,
+    //     2 * Math.PI,
+    //     false
+    //   );
+    //   ctx.stroke();
+    //   return true;
+    // }
 
   }, {
-    key: "drawHitbox",
-    value: function drawHitbox() {
-      // this.hitboxCenter = [];
-      // this.pos.forEach((_, i) =>
-      //   this.hitboxCenter.push(this.pos[i] + this.dim[i] / 2)
-      // );
-      // // this.hitboxCenter = [this.pos[0] + this.dim[0] / 2, this.pos[1] + this.dim[1] / 2];
-      // // if (this.dim[0] > this.dim[1]) this.hitboxRadius = this.dim[0] / 2;
-      // this.hitboxRadius = this.dim[0] > this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
-      // // ! for testing
-      var canvas = document.getElementById('canvas');
-      var ctx = canvas.getContext('2d');
-      ctx.beginPath();
-      ctx.arc(this.hitboxCenter[0], this.hitboxCenter[1], this.hitboxRadius, 0, 2 * Math.PI, false);
-      ctx.stroke();
-      return true;
+    key: "isCollision",
+    value: function isCollision(entity) {
+      var dx = this.hitboxCenter[0] - entity.hitboxCenter[0];
+      var dy = this.hitboxCenter[1] - entity.hitboxCenter[1];
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var minDistance = this.hitboxRadius + entity.hitboxRadius;
+      if (distance < minDistance) return true;else return false;
     }
   }]);
 
@@ -280,6 +281,7 @@ var Game = /*#__PURE__*/function () {
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
     this.entities = [];
+    this.creatures = [];
     this.moveDirX = 0;
     this.moveDirY = 0;
   }
@@ -293,8 +295,9 @@ var Game = /*#__PURE__*/function () {
         pos: pos,
         dim: [20, 20],
         src: "assets/sprites/test-slime.png"
-      });
-      this.entities.push(this.player);
+      }); // this.entities.push(this.player);
+
+      this.creatures.push(this.player);
     }
   }, {
     key: "generateMap",
@@ -317,6 +320,9 @@ var Game = /*#__PURE__*/function () {
       this.entities.forEach(function (entity) {
         return entity.draw(ctx);
       });
+      this.creatures.forEach(function (creature) {
+        return creature.draw(ctx);
+      });
     }
   }, {
     key: "start",
@@ -331,8 +337,6 @@ var Game = /*#__PURE__*/function () {
         _this.render(_this.ctx);
 
         _this.moveEntities();
-
-        _this.player.isCollision(_this.rock);
       }, 16.667);
     }
   }, {
@@ -386,9 +390,11 @@ var Game = /*#__PURE__*/function () {
       var _this3 = this;
 
       // * testing
+      // check collision with player
       this.entities.forEach(function (entity) {
-        entity.move(_this3.moveDirX, _this3.moveDirY);
-      });
+        return entity.move(_this3.moveDirX, _this3.moveDirY, _this3.player);
+      }); // this.player.move();
+      // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
     }
   }]);
 
@@ -477,11 +483,8 @@ var Slime = /*#__PURE__*/function (_Creature) {
 
   _createClass(Slime, [{
     key: "move",
-    value: function move() {
-      // Do not move because the player should be in the center of the frame of
+    value: function move() {// Do not move because the player should be in the center of the frame of
       // reference
-      // ! hit box for testing
-      this.drawHitbox();
     }
   }]);
 
