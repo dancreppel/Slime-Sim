@@ -7,6 +7,7 @@ export default class Game {
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
     this.entities = [];
+    this.creatures = [];
     this.moveDirX = 0;
     this.moveDirY = 0;
 
@@ -21,7 +22,8 @@ export default class Game {
       src: "assets/sprites/test-slime.png"
     });
 
-    this.entities.push(this.player);
+    // this.entities.push(this.player);
+    this.creatures.push(this.player);
   }
 
   generateMap () {
@@ -42,6 +44,7 @@ export default class Game {
   render (ctx) {
     ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
     this.entities.forEach(entity => entity.draw(ctx));
+    this.creatures.forEach(creature => creature.draw(ctx));
   }
 
   start () {
@@ -52,7 +55,6 @@ export default class Game {
     setInterval(() => {
       this.render(this.ctx);
       this.moveEntities();
-      this.player.isCollision(this.rock);
     }, 16.667)
   }
 
@@ -96,8 +98,11 @@ export default class Game {
 
   moveEntities () {
     // * testing
-    this.entities.forEach(entity => {
-      entity.move(this.moveDirX, this.moveDirY);
-    })
+    // check collision with player
+    this.entities.forEach(entity => 
+      entity.move(this.moveDirX, this.moveDirY, this.player)
+    );
+    // this.player.move();
+    // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
   }
 }
