@@ -13,8 +13,5 @@ export default class Creature extends Entity {
   move() {
     // Do not move because the player should be in the center of the frame of
     // reference
-
-    // // ! hit box for testing
-    // this.drawHitbox();
   }
 }
