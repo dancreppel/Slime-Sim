@@ -1,5 +1,6 @@
 import Entity from './entity';
 import Slime from './slime';
+import Map from './map';
 
 export default class Game {
   constructor (options) {
@@ -27,18 +28,24 @@ export default class Game {
   }
 
   generateMap () {
-
+    this.sandBox = new Map({
+      width: 1200,
+      height: 1200,
+      wall: "assets/sprites/rock.jpg"
+    });
   }
 
   generateEntities () {
     // * For testing
-    this.rock = new Entity ({
-      pos: [500, 500],
-      dim: [200, 150],
-      src: 'assets/sprites/rock.jpg'
-    });
+    // this.rock = new Entity ({
+    //   pos: [500, 500],
+    //   dim: [200, 150],
+    //   src: 'assets/sprites/rock.jpg'
+    // });
+    // this.entities.push(this.rock);
 
-    this.entities.push(this.rock);
+    this.entities = this.sandBox.wallEntities;
+
   }
 
   render (ctx) {
@@ -49,6 +56,7 @@ export default class Game {
 
   start () {
     this.setKeyBinds();
+    this.generateMap();
     this.generateEntities();
     this.createPlayer();
     // refresh 60 times per second
