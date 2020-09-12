@@ -264,11 +264,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Game; });
 /* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
 /* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
+/* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./map */ "./src/map.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -301,17 +303,24 @@ var Game = /*#__PURE__*/function () {
     }
   }, {
     key: "generateMap",
-    value: function generateMap() {}
+    value: function generateMap() {
+      this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_2__["default"]({
+        width: 1200,
+        height: 1200,
+        wall: "assets/sprites/rock.jpg"
+      });
+    }
   }, {
     key: "generateEntities",
     value: function generateEntities() {
       // * For testing
-      this.rock = new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-        pos: [500, 500],
-        dim: [200, 150],
-        src: 'assets/sprites/rock.jpg'
-      });
-      this.entities.push(this.rock);
+      // this.rock = new Entity ({
+      //   pos: [500, 500],
+      //   dim: [200, 150],
+      //   src: 'assets/sprites/rock.jpg'
+      // });
+      // this.entities.push(this.rock);
+      this.entities = this.sandBox.wallEntities;
     }
   }, {
     key: "render",
@@ -330,6 +339,7 @@ var Game = /*#__PURE__*/function () {
       var _this = this;
 
       this.setKeyBinds();
+      this.generateMap();
       this.generateEntities();
       this.createPlayer(); // refresh 60 times per second
 
@@ -432,6 +442,80 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   game.start();
 });
+
+/***/ }),
+
+/***/ "./src/map.js":
+/*!********************!*\
+  !*** ./src/map.js ***!
+  \********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Map; });
+/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var Map = /*#__PURE__*/function () {
+  function Map(options) {
+    _classCallCheck(this, Map);
+
+    this.width = options.width;
+    this.height = options.height; // pass in src for wall object and floor
+
+    this.wall = options.wall;
+    this.floor = options.floor;
+    this.wallEntities = []; // instantiate borders of map
+
+    this.border();
+  }
+
+  _createClass(Map, [{
+    key: "border",
+    value: function border() {
+      var spacing = this.height / 20; // let objectSize = spacing * 1.5;
+
+      for (var i = 0; i < 20; i++) {
+        // left border
+        this.wallEntities.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+          pos: [0, i * spacing],
+          dim: [spacing, spacing],
+          src: this.wall
+        })); // right border
+
+        this.wallEntities.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+          pos: [this.width, i * spacing + spacing],
+          dim: [spacing, spacing],
+          src: this.wall
+        })); // top border
+
+        this.wallEntities.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+          pos: [i * spacing + spacing, 0],
+          dim: [spacing, spacing],
+          src: this.wall
+        })); // bottom border
+
+        this.wallEntities.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+          pos: [i * spacing, this.height],
+          dim: [spacing, spacing],
+          src: this.wall
+        }));
+      }
+    }
+  }]);
+
+  return Map;
+}();
+
+
 
 /***/ }),
 
