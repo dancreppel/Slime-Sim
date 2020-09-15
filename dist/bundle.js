@@ -184,7 +184,7 @@ var Entity = /*#__PURE__*/function () {
   _createClass(Entity, [{
     key: "draw",
     value: function draw(ctx) {
-      ctx.drawImage(this.image, this.pos[0], this.pos[1], this.dim[0], this.dim[1]); // // ! for testing
+      ctx.drawImage(this.image, this.pos[0], this.pos[1], this.dim[0], this.dim[1]); // ! for testing
       // this.drawHitbox();
     }
   }, {
@@ -194,14 +194,6 @@ var Entity = /*#__PURE__*/function () {
       this.pos[1] += dy;
       this.hitboxCenter[0] += dx;
       this.hitboxCenter[1] += dy;
-
-      if (this.isCollision(arguments.length <= 2 ? undefined : arguments[2])) {
-        // undo move with a little bounce back
-        this.pos[0] -= 1.1 * dx;
-        this.pos[1] -= 1.1 * dy;
-        this.hitboxCenter[0] -= 1.1 * dx;
-        this.hitboxCenter[1] -= 1.1 * dy;
-      }
     }
   }, {
     key: "hitboxCenter",
@@ -344,9 +336,13 @@ var Game = /*#__PURE__*/function () {
       this.createPlayer(); // refresh 60 times per second
 
       setInterval(function () {
-        _this.render(_this.ctx);
+        _this.render(_this.ctx); // move entities regularly
 
-        _this.moveEntities();
+
+        _this.moveEntities(false); // if a collision occurs, reverse move
+
+
+        if (_this.checkCollision()) _this.moveEntities(true);
       }, 16.667);
     }
   }, {
@@ -396,15 +392,30 @@ var Game = /*#__PURE__*/function () {
     }
   }, {
     key: "moveEntities",
-    value: function moveEntities() {
+    value: function moveEntities(reverse) {
       var _this3 = this;
 
       // * testing
-      // check collision with player
-      this.entities.forEach(function (entity) {
-        return entity.move(_this3.moveDirX, _this3.moveDirY, _this3.player);
-      }); // this.player.move();
+      if (reverse) {
+        this.entities.forEach(function (entity) {
+          return entity.move(-_this3.moveDirX, -_this3.moveDirY);
+        });
+      } else {
+        this.entities.forEach(function (entity) {
+          return entity.move(_this3.moveDirX, _this3.moveDirY);
+        });
+      } // this.player.move();
       // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
+
+    }
+  }, {
+    key: "checkCollision",
+    value: function checkCollision() {
+      var _this4 = this;
+
+      return this.entities.some(function (entity) {
+        return entity.isCollision(_this4.player);
+      });
     }
   }]);
 
