@@ -21,7 +21,7 @@ export default class Entity {
       this.dim[1]
     );
 
-    // // ! for testing
+    // ! for testing
     // this.drawHitbox();
   }
 
@@ -30,14 +30,6 @@ export default class Entity {
     this.pos[1] += dy;
     this.hitboxCenter[0] += dx;
     this.hitboxCenter[1] += dy;
-
-    if (this.isCollision(entities[0])) {
-      // undo move with a little bounce back
-      this.pos[0] -= 1.1 * dx;
-      this.pos[1] -= 1.1 * dy;
-      this.hitboxCenter[0] -= 1.1 * dx;
-      this.hitboxCenter[1] -= 1.1 * dy;
-    }
   }
 
   hitboxCenter() {
