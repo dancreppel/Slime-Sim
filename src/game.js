@@ -62,7 +62,10 @@ export default class Game {
     // refresh 60 times per second
     setInterval(() => {
       this.render(this.ctx);
-      this.moveEntities();
+      // move entities regularly
+      this.moveEntities(false);
+      // if a collision occurs, reverse move
+      if (this.checkCollision()) this.moveEntities(true);
     }, 16.667)
   }
 
@@ -104,13 +107,22 @@ export default class Game {
     })
   }
 
-  moveEntities () {
+  moveEntities (reverse) {
     // * testing
-    // check collision with player
-    this.entities.forEach(entity => 
-      entity.move(this.moveDirX, this.moveDirY, this.player)
-    );
+    if (reverse) {
+      this.entities.forEach(entity => 
+        entity.move(-this.moveDirX, -this.moveDirY)
+      );
+    } else {
+      this.entities.forEach((entity) =>
+        entity.move(this.moveDirX, this.moveDirY)
+      );
+    }
     // this.player.move();
     // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
+  }
+
+  checkCollision () {
+    return this.entities.some(entity => entity.isCollision(this.player));
   }
 }
