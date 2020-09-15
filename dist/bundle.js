@@ -209,7 +209,7 @@ var Entity = /*#__PURE__*/function () {
     key: "hitboxRadius",
     value: function hitboxRadius() {
       return this.dim[0] < this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
-    } // // ! for testing
+    } // ! for testing
     // drawHitbox() {
     //   const canvas = document.getElementById("canvas");
     //   const ctx = canvas.getContext("2d");
