@@ -68,68 +68,55 @@ export default class Map {
 
   boundary () {
     this.bounds = [];
-    
-    // Bounds are determined by their start and end coordinates
+    // Bounds are determined by their coordinates
     // ex: [0, 0], [10, 10]
 
-    // upper bound
-    this.bounds.push(
-      [
-        [this.spacing, this.spacing],
-        [this.height , this.spacing]
-      ]
-    );
+    // upper left corner
+    this.bounds.push([this.spacing, this.spacing]);
 
-    // lower bound
-    this.bounds.push(
-      [
-        [this.spacing, this.height],
-        [this.height, this.height]
-      ]
-    );
+    // upper right corner
+    this.bounds.push([this.height, this.spacing]);
 
-    // left bound
-    this.bounds.push(
-      [
-        [this.spacing, this.spacing],
-        [this.spacing, this.height]
-      ]
-    );
 
-    // right bound
-    this.bounds.push(
-      [
-        [this.height, this.spacing],
-        [this.height, this.height]
-      ]
-    );
+    // bottom right corner
+    this.bounds.push([this.height, this.height]);
+
+    // bottom left corner
+    this.bounds.push([this.spacing, this.height]);
   }
 
   moveBoundary (dx, dy) {
     this.bounds.forEach(bound => {
-      // startX
-      bound[0][0] += dx;
-      // startY
-      bound[0][1] += dy;
-      // endX
-      bound[1][0] += dx;
-      // endY
-      bound[1][1] += dy;
+      bound[0] += dx;
+      bound[1] += dy;
     });
   }
 
   // ! Testing Only
   drawBoundary (ctx) {
     ctx.beginPath();
-    this.bounds.forEach(bound => {
-      let startX = bound[0][0];
-      let startY = bound[0][1];
-      let endX = bound[1][0];
-      let endY = bound[1][1];
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
+    let startX = this.bounds[0][0];
+    let startY = this.bounds[0][1];
+
+    this.bounds.forEach((bound, idx) => {
+      if (idx === 0) {
+        ctx.moveTo(startX, startY);
+      } else {
+        let moveToX = bound[0];
+        let moveToY = bound[1];
+        ctx.lineTo(moveToX, moveToY);
+      }
+
+      // edge case when last index lineTo start
+      if (idx === this.bounds.length - 1) {
+        ctx.lineTo(startX, startY);
+      } 
     });
     ctx.stroke();
   }
 
+  outOfBounds (entity) {
+    // check if entity is above upper bound
+    // if (entity.hitboxCenter[1] < 
+  }
 }
