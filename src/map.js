@@ -118,5 +118,18 @@ export default class Map {
     });
   }
 
+  // ! Testing Only
+  drawBoundary (ctx) {
+    ctx.beginPath();
+    this.bounds.forEach(bound => {
+      let startX = bound[0][0];
+      let startY = bound[0][1];
+      let endX = bound[1][0];
+      let endY = bound[1][1];
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+    });
+    ctx.stroke();
+  }
 
 }
