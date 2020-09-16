@@ -62,8 +62,8 @@ export default class Map {
   drawBorder (ctx) {
     this.wallEntities.forEach(entity => entity.draw(ctx));
     
-    // ! Testing only
-    this.drawBoundary(ctx);
+    // // ! Testing only
+    // this.drawBoundary(ctx);
   }
 
   boundary () {
@@ -83,51 +83,61 @@ export default class Map {
     this.leftBound = this.spacing;
   }
 
-  moveBoundary (dx, dy) {
+  move (dx, dy) {
+    // adjust bounds
     this.topBound += dy;
     this.rightBound += dx;
     this.bottomBound += dy;
     this.leftBound += dx;
+
+    // adjust pos for each wall object
+    this.wallEntities.forEach(entity => entity.move(dx, dy));
   }
 
-  // ! Testing Only
-  drawBoundary (ctx) {
-    // ! Testing only
-    let bounds = [];
-    // top left corner
-    bounds.push([this.leftBound, this.topBound]);
-    // top right corner
-    bounds.push([this.rightBound, this.topBound]);
-    // bottom right corner
-    bounds.push([this.rightBound, this.bottomBound]);
-    // bottom left corner
-    bounds.push([this.leftBound, this.bottomBound]);
+  // // ! Testing Only
+  // drawBoundary (ctx) {
+  //   // ! Testing only
+  //   let bounds = [];
+  //   // top left corner
+  //   bounds.push([this.leftBound, this.topBound]);
+  //   // top right corner
+  //   bounds.push([this.rightBound, this.topBound]);
+  //   // bottom right corner
+  //   bounds.push([this.rightBound, this.bottomBound]);
+  //   // bottom left corner
+  //   bounds.push([this.leftBound, this.bottomBound]);
 
-    ctx.beginPath();
-    let startX = bounds[0][0];
-    let startY = bounds[0][1];
+  //   ctx.beginPath();
+  //   let startX = bounds[0][0];
+  //   let startY = bounds[0][1];
 
-    bounds.forEach((bound, idx) => {
-      if (idx === 0) {
-        ctx.moveTo(startX, startY);
-      } else {
-        let moveToX = bound[0];
-        let moveToY = bound[1];
-        ctx.lineTo(moveToX, moveToY);
-      }
+  //   bounds.forEach((bound, idx) => {
+  //     if (idx === 0) {
+  //       ctx.moveTo(startX, startY);
+  //     } else {
+  //       let moveToX = bound[0];
+  //       let moveToY = bound[1];
+  //       ctx.lineTo(moveToX, moveToY);
+  //     }
 
-      // edge case when last index lineTo start
-      if (idx === bounds.length - 1) {
-        ctx.lineTo(startX, startY);
-      }
-    });
-    ctx.stroke();
-  }
+  //     // edge case when last index lineTo start
+  //     if (idx === bounds.length - 1) {
+  //       ctx.lineTo(startX, startY);
+  //     }
+  //   });
+  //   ctx.stroke();
+  // }
 
   outOfBounds (entity) {
-    // check if entity is above upper bound
-    // let topBound = this.bounds[0][1];
-    // let bottomBound = this.bounds[]
-    // if (entity.hitboxCenter[1] < 
+    // check if entity's hitbox is above top bound
+    if (entity.hitboxCenter[1] - entity.hitboxRadius < this.topBound) return true;
+    // check if entity's hitbox is below bottom bound
+    if (entity.hitboxCenter[1] + entity.hitboxRadius > this.bottomBound) return true;
+    // check if entity's hitbox is out of left bound
+    if (entity.hitboxCenter[0] - entity.hitboxRadius < this.leftBound) return true;
+    // check if entity's hitbox is out of right bound
+    if (entity.hitboxCenter[0] + entity.hitboxRadius > this.rightBound) return true;
+    // otherwise
+    return false;
   }
 }
