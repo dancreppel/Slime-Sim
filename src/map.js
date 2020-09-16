@@ -105,5 +105,18 @@ export default class Map {
     );
   }
 
+  moveBoundary (dx, dy) {
+    this.bounds.forEach(bound => {
+      // startX
+      bound[0][0] += dx;
+      // startY
+      bound[0][1] += dy;
+      // endX
+      bound[1][0] += dx;
+      // endY
+      bound[1][1] += dy;
+    });
+  }
+
 
 }
