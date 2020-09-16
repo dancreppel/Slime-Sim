@@ -2,7 +2,6 @@ import Entity from './entity';
 
 export default class Map {
   constructor (options) {
-    this.width = options.width;
     this.height = options.height;
 
     // pass in src for wall object and floor
@@ -12,12 +11,14 @@ export default class Map {
     this.wallEntities = [];
 
     // instantiate borders of map
-    this.border();
+    this.createBorder();
+    // instantiate bounds of map
+    this.boundary();
   }
 
-  border () {
-    let spacing = this.height / 20;
-    // let objectSize = spacing * 1.5;
+  createBorder () {
+    this.spacing = this.height / 20;
+    let spacing = this.spacing;
 
     for(let i = 0; i < 20; i++) {
       // left border
@@ -32,7 +33,7 @@ export default class Map {
       // right border
       this.wallEntities.push(
         new Entity ({
-          pos: [this.width, i * spacing + spacing],
+          pos: [this.height, i * spacing + spacing],
           dim: [spacing, spacing],
           src: this.wall
         })
@@ -57,4 +58,13 @@ export default class Map {
       );
     }
   }
+
+  drawBorder (ctx) {
+    this.wallEntities.forEach(entity => entity.draw(ctx));
+    
+    // ! Testing only
+    this.drawBoundary(ctx);
+  }
+
+
 }
