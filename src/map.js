@@ -66,5 +66,44 @@ export default class Map {
     this.drawBoundary(ctx);
   }
 
+  boundary () {
+    this.bounds = [];
+    
+    // Bounds are determined by their start and end coordinates
+    // ex: [0, 0], [10, 10]
+
+    // upper bound
+    this.bounds.push(
+      [
+        [this.spacing, this.spacing],
+        [this.height , this.spacing]
+      ]
+    );
+
+    // lower bound
+    this.bounds.push(
+      [
+        [this.spacing, this.height],
+        [this.height, this.height]
+      ]
+    );
+
+    // left bound
+    this.bounds.push(
+      [
+        [this.spacing, this.spacing],
+        [this.spacing, this.height]
+      ]
+    );
+
+    // right bound
+    this.bounds.push(
+      [
+        [this.height, this.spacing],
+        [this.height, this.height]
+      ]
+    );
+  }
+
 
 }
