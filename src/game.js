@@ -29,7 +29,6 @@ export default class Game {
 
   generateMap () {
     this.sandBox = new Map({
-      width: 1200,
       height: 1200,
       wall: "assets/sprites/rock.jpg"
     });
@@ -44,12 +43,13 @@ export default class Game {
     // });
     // this.entities.push(this.rock);
 
-    this.entities = this.sandBox.wallEntities;
+    // this.entities = this.sandBox.wallEntities;
 
   }
 
   render (ctx) {
     ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
+    this.sandBox.drawBorder(ctx);
     this.entities.forEach(entity => entity.draw(ctx));
     this.creatures.forEach(creature => creature.draw(ctx));
   }
@@ -62,10 +62,12 @@ export default class Game {
     // refresh 60 times per second
     setInterval(() => {
       this.render(this.ctx);
-      // move entities regularly
-      this.moveEntities(false);
+      // regular move
+      this.move(false);
       // if a collision occurs, reverse move
-      if (this.checkCollision()) this.moveEntities(true);
+      if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
+        this.move(true);
+      }
     }, 16.667)
   }
 
@@ -107,16 +109,20 @@ export default class Game {
     })
   }
 
-  moveEntities (reverse) {
+  move (reverse) {
     // * testing
     if (reverse) {
-      this.entities.forEach(entity => 
+      this.entities.forEach((entity) =>
         entity.move(-this.moveDirX, -this.moveDirY)
       );
+
+      this.sandBox.move(-this.moveDirX, -this.moveDirY);
     } else {
       this.entities.forEach((entity) =>
         entity.move(this.moveDirX, this.moveDirY)
       );
+
+      this.sandBox.move(this.moveDirX, this.moveDirY);
     }
     // this.player.move();
     // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
