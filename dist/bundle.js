@@ -297,27 +297,26 @@ var Game = /*#__PURE__*/function () {
     key: "generateMap",
     value: function generateMap() {
       this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_2__["default"]({
-        width: 1200,
         height: 1200,
         wall: "assets/sprites/rock.jpg"
       });
     }
   }, {
     key: "generateEntities",
-    value: function generateEntities() {
-      // * For testing
+    value: function generateEntities() {// * For testing
       // this.rock = new Entity ({
       //   pos: [500, 500],
       //   dim: [200, 150],
       //   src: 'assets/sprites/rock.jpg'
       // });
       // this.entities.push(this.rock);
-      this.entities = this.sandBox.wallEntities;
+      // this.entities = this.sandBox.wallEntities;
     }
   }, {
     key: "render",
     value: function render(ctx) {
       ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
+      this.sandBox.drawBorder(ctx);
       this.entities.forEach(function (entity) {
         return entity.draw(ctx);
       });
@@ -336,13 +335,15 @@ var Game = /*#__PURE__*/function () {
       this.createPlayer(); // refresh 60 times per second
 
       setInterval(function () {
-        _this.render(_this.ctx); // move entities regularly
+        _this.render(_this.ctx); // regular move
 
 
-        _this.moveEntities(false); // if a collision occurs, reverse move
+        _this.move(false); // if a collision occurs, reverse move
 
 
-        if (_this.checkCollision()) _this.moveEntities(true);
+        if (_this.checkCollision() || _this.sandBox.outOfBounds(_this.player)) {
+          _this.move(true);
+        }
       }, 16.667);
     }
   }, {
@@ -391,8 +392,8 @@ var Game = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "moveEntities",
-    value: function moveEntities(reverse) {
+    key: "move",
+    value: function move(reverse) {
       var _this3 = this;
 
       // * testing
@@ -400,10 +401,12 @@ var Game = /*#__PURE__*/function () {
         this.entities.forEach(function (entity) {
           return entity.move(-_this3.moveDirX, -_this3.moveDirY);
         });
+        this.sandBox.move(-this.moveDirX, -this.moveDirY);
       } else {
         this.entities.forEach(function (entity) {
           return entity.move(_this3.moveDirX, _this3.moveDirY);
         });
+        this.sandBox.move(this.moveDirX, this.moveDirY);
       } // this.player.move();
       // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
 
@@ -479,20 +482,22 @@ var Map = /*#__PURE__*/function () {
   function Map(options) {
     _classCallCheck(this, Map);
 
-    this.width = options.width;
     this.height = options.height; // pass in src for wall object and floor
 
     this.wall = options.wall;
     this.floor = options.floor;
     this.wallEntities = []; // instantiate borders of map
 
-    this.border();
+    this.createBorder(); // instantiate bounds of map
+
+    this.boundary();
   }
 
   _createClass(Map, [{
-    key: "border",
-    value: function border() {
-      var spacing = this.height / 20; // let objectSize = spacing * 1.5;
+    key: "createBorder",
+    value: function createBorder() {
+      this.spacing = this.height / 20;
+      var spacing = this.spacing;
 
       for (var i = 0; i < 20; i++) {
         // left border
@@ -503,7 +508,7 @@ var Map = /*#__PURE__*/function () {
         })); // right border
 
         this.wallEntities.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-          pos: [this.width, i * spacing + spacing],
+          pos: [this.height, i * spacing + spacing],
           dim: [spacing, spacing],
           src: this.wall
         })); // top border
@@ -520,6 +525,85 @@ var Map = /*#__PURE__*/function () {
           src: this.wall
         }));
       }
+    }
+  }, {
+    key: "drawBorder",
+    value: function drawBorder(ctx) {
+      this.wallEntities.forEach(function (entity) {
+        return entity.draw(ctx);
+      }); // // ! Testing only
+      // this.drawBoundary(ctx);
+    }
+  }, {
+    key: "boundary",
+    value: function boundary() {
+      // Bounds are determined by their X or Y values
+      // ex: X = 0 or Y = 10
+      // top bound in terms of Y
+      this.topBound = this.spacing; // right bound in terms of X
+
+      this.rightBound = this.height; // bottom bound in terms of Y
+
+      this.bottomBound = this.height; // left bound in terms of X
+
+      this.leftBound = this.spacing;
+    }
+  }, {
+    key: "move",
+    value: function move(dx, dy) {
+      // adjust bounds
+      this.topBound += dy;
+      this.rightBound += dx;
+      this.bottomBound += dy;
+      this.leftBound += dx; // adjust pos for each wall object
+
+      this.wallEntities.forEach(function (entity) {
+        return entity.move(dx, dy);
+      });
+    } // // ! Testing Only
+    // drawBoundary (ctx) {
+    //   // ! Testing only
+    //   let bounds = [];
+    //   // top left corner
+    //   bounds.push([this.leftBound, this.topBound]);
+    //   // top right corner
+    //   bounds.push([this.rightBound, this.topBound]);
+    //   // bottom right corner
+    //   bounds.push([this.rightBound, this.bottomBound]);
+    //   // bottom left corner
+    //   bounds.push([this.leftBound, this.bottomBound]);
+    //   ctx.beginPath();
+    //   let startX = bounds[0][0];
+    //   let startY = bounds[0][1];
+    //   bounds.forEach((bound, idx) => {
+    //     if (idx === 0) {
+    //       ctx.moveTo(startX, startY);
+    //     } else {
+    //       let moveToX = bound[0];
+    //       let moveToY = bound[1];
+    //       ctx.lineTo(moveToX, moveToY);
+    //     }
+    //     // edge case when last index lineTo start
+    //     if (idx === bounds.length - 1) {
+    //       ctx.lineTo(startX, startY);
+    //     }
+    //   });
+    //   ctx.stroke();
+    // }
+
+  }, {
+    key: "outOfBounds",
+    value: function outOfBounds(entity) {
+      // check if entity's hitbox is above top bound
+      if (entity.hitboxCenter[1] - entity.hitboxRadius < this.topBound) return true; // check if entity's hitbox is below bottom bound
+
+      if (entity.hitboxCenter[1] + entity.hitboxRadius > this.bottomBound) return true; // check if entity's hitbox is out of left bound
+
+      if (entity.hitboxCenter[0] - entity.hitboxRadius < this.leftBound) return true; // check if entity's hitbox is out of right bound
+
+      if (entity.hitboxCenter[0] + entity.hitboxRadius > this.rightBound) return true; // otherwise
+
+      return false;
     }
   }]);
 
