@@ -298,7 +298,8 @@ var Game = /*#__PURE__*/function () {
     value: function generateMap() {
       this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_2__["default"]({
         height: 1200,
-        wall: "assets/sprites/rock.jpg"
+        wall: "assets/sprites/rock.jpg",
+        floor: "assets/sprites/grass.png"
       });
     }
   }, {
@@ -316,7 +317,7 @@ var Game = /*#__PURE__*/function () {
     key: "render",
     value: function render(ctx) {
       ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
-      this.sandBox.drawBorder(ctx);
+      this.sandBox.draw(ctx);
       this.entities.forEach(function (entity) {
         return entity.draw(ctx);
       });
@@ -486,11 +487,14 @@ var Map = /*#__PURE__*/function () {
 
     this.wall = options.wall;
     this.floor = options.floor;
-    this.wallEntities = []; // instantiate borders of map
+    this.wallEntities = [];
+    this.floorTiles = []; // instantiate borders of map
 
     this.createBorder(); // instantiate bounds of map
 
-    this.boundary();
+    this.boundary(); // instantiate floor of map
+
+    this.createFloor();
   }
 
   _createClass(Map, [{
@@ -527,8 +531,11 @@ var Map = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "drawBorder",
-    value: function drawBorder(ctx) {
+    key: "draw",
+    value: function draw(ctx) {
+      this.floorTiles.forEach(function (tile) {
+        return tile.draw(ctx);
+      });
       this.wallEntities.forEach(function (entity) {
         return entity.draw(ctx);
       }); // // ! Testing only
@@ -555,7 +562,11 @@ var Map = /*#__PURE__*/function () {
       this.topBound += dy;
       this.rightBound += dx;
       this.bottomBound += dy;
-      this.leftBound += dx; // adjust pos for each wall object
+      this.leftBound += dx; // adjust pos for each tile
+
+      this.floorTiles.forEach(function (tile) {
+        return tile.move(dx, dy);
+      }); // adjust pos for each wall object
 
       this.wallEntities.forEach(function (entity) {
         return entity.move(dx, dy);
@@ -604,6 +615,23 @@ var Map = /*#__PURE__*/function () {
       if (entity.hitboxCenter[0] + entity.hitboxRadius > this.rightBound) return true; // otherwise
 
       return false;
+    }
+  }, {
+    key: "createFloor",
+    value: function createFloor() {
+      // n x n grass tiles
+      var n = 5;
+      var dim = this.height / n;
+
+      for (var i = 0; i < n; i++) {
+        for (var j = 0; j < n; j++) {
+          this.floorTiles.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+            pos: [i * dim, j * dim],
+            dim: [dim + this.spacing, dim + this.spacing],
+            src: this.floor
+          }));
+        }
+      }
     }
   }]);
 

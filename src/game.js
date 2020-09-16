@@ -30,7 +30,8 @@ export default class Game {
   generateMap () {
     this.sandBox = new Map({
       height: 1200,
-      wall: "assets/sprites/rock.jpg"
+      wall: "assets/sprites/rock.jpg",
+      floor: "assets/sprites/grass.png"
     });
   }
 
@@ -49,7 +50,7 @@ export default class Game {
 
   render (ctx) {
     ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
-    this.sandBox.drawBorder(ctx);
+    this.sandBox.draw(ctx);
     this.entities.forEach(entity => entity.draw(ctx));
     this.creatures.forEach(creature => creature.draw(ctx));
   }
