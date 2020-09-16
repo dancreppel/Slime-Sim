@@ -9,11 +9,14 @@ export default class Map {
     this.floor = options.floor;
 
     this.wallEntities = [];
+    this.floorTiles = [];
 
     // instantiate borders of map
     this.createBorder();
     // instantiate bounds of map
     this.boundary();
+    // instantiate floor of map
+    this.createFloor();
   }
 
   createBorder () {
@@ -59,7 +62,8 @@ export default class Map {
     }
   }
 
-  drawBorder (ctx) {
+  draw (ctx) {
+    this.floorTiles.forEach(tile => tile.draw(ctx));
     this.wallEntities.forEach(entity => entity.draw(ctx));
     
     // // ! Testing only
@@ -89,7 +93,9 @@ export default class Map {
     this.rightBound += dx;
     this.bottomBound += dy;
     this.leftBound += dx;
-
+    
+    // adjust pos for each tile
+    this.floorTiles.forEach(tile => tile.move(dx, dy));
     // adjust pos for each wall object
     this.wallEntities.forEach(entity => entity.move(dx, dy));
   }
@@ -139,5 +145,23 @@ export default class Map {
     if (entity.hitboxCenter[0] + entity.hitboxRadius > this.rightBound) return true;
     // otherwise
     return false;
+  }
+
+  createFloor () {
+    // n x n grass tiles
+    let n = 5;
+    let dim = this.height / n;
+
+    for(let i = 0; i < n; i++) {
+      for(let j = 0; j < n; j++) {
+        this.floorTiles.push(
+          new Entity({
+            pos: [i * dim, j * dim],
+            dim: [dim + this.spacing, dim + this.spacing],
+            src: this.floor,
+          })
+        );
+      }
+    }
   }
 }
