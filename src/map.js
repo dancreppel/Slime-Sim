@@ -20,10 +20,11 @@ export default class Map {
   }
 
   createBorder () {
-    this.spacing = this.height / 20;
+    let n = 40;
+    this.spacing = this.height / n;
     let spacing = this.spacing;
 
-    for(let i = 0; i < 20; i++) {
+    for(let i = 0; i < n; i++) {
       // left border
       this.wallEntities.push(
         new Entity ({
@@ -149,16 +150,20 @@ export default class Map {
 
   createFloor () {
     // n x n grass tiles
-    let n = 5;
-    let dim = this.height / n;
+    let n = 20;
+    // offset is needed because floor tiles need to be outside the bounds of the
+    // borders
+    let offset = 900;
+    let dim = (this.height + 2 * offset) / n;
+    // let dim = (this.height + offset) / n + offset;
 
     for(let i = 0; i < n; i++) {
       for(let j = 0; j < n; j++) {
         this.floorTiles.push(
           new Entity({
-            pos: [i * dim, j * dim],
-            dim: [dim + this.spacing, dim + this.spacing],
-            src: this.floor,
+            pos: [i * dim - offset, j * dim - offset],
+            dim: [dim, dim],
+            src: this.floor
           })
         );
       }
