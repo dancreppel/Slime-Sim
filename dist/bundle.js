@@ -445,7 +445,7 @@ __webpack_require__.r(__webpack_exports__);
 
 document.addEventListener("DOMContentLoaded", function () {
   var canvas = document.getElementById('canvas');
-  var DIM_X = 1200;
+  var DIM_X = 1600;
   var DIM_Y = 900;
   var ctx = canvas.getContext('2d');
   canvas.width = DIM_X;
@@ -500,10 +500,11 @@ var Map = /*#__PURE__*/function () {
   _createClass(Map, [{
     key: "createBorder",
     value: function createBorder() {
-      this.spacing = this.height / 20;
+      var n = 40;
+      this.spacing = this.height / n;
       var spacing = this.spacing;
 
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < n; i++) {
         // left border
         this.wallEntities.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
           pos: [0, i * spacing],
@@ -620,14 +621,17 @@ var Map = /*#__PURE__*/function () {
     key: "createFloor",
     value: function createFloor() {
       // n x n grass tiles
-      var n = 5;
-      var dim = this.height / n;
+      var n = 20; // offset is needed because floor tiles need to be outside the bounds of the
+      // borders
+
+      var offset = 900;
+      var dim = (this.height + 2 * offset) / n; // let dim = (this.height + offset) / n + offset;
 
       for (var i = 0; i < n; i++) {
         for (var j = 0; j < n; j++) {
           this.floorTiles.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-            pos: [i * dim, j * dim],
-            dim: [dim + this.spacing, dim + this.spacing],
+            pos: [i * dim - offset, j * dim - offset],
+            dim: [dim, dim],
             src: this.floor
           }));
         }
