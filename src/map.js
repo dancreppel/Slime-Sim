@@ -156,20 +156,15 @@ export default class Map {
   createFloor () {
     // n x n grass tiles
     let n = 20;
-    // offset is needed because floor tiles need to be outside the bounds of the
-    // borders
-    // let offset = 900;
-    let offset = 0;
-    let dim = (this.height + 2 * offset) / n;
-    // let dim = (this.height + offset) / n + offset;
+    let dim = this.height / n;
 
     for(let i = 0; i < n; i++) {
       for(let j = 0; j < n; j++) {
         this.floorTiles.push(
           new Entity({
-            pos: [i * dim - offset, j * dim - offset],
-            dim: [dim, dim],
-            src: this.floor
+            pos: [i * dim, j * dim],
+            dim: [dim + this.spacing, dim + this.spacing],
+            src: this.floor,
           })
         );
       }
