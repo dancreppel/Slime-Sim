@@ -287,8 +287,8 @@ var Game = /*#__PURE__*/function () {
       var pos = [this.DIM_X / 2, this.DIM_Y / 2];
       this.player = new _slime__WEBPACK_IMPORTED_MODULE_1__["default"]({
         pos: pos,
-        dim: [20, 20],
-        src: "assets/sprites/test-slime.png"
+        dim: [30, 30],
+        src: "assets/sprites/slime.png"
       }); // this.entities.push(this.player);
 
       this.creatures.push(this.player);
@@ -297,9 +297,10 @@ var Game = /*#__PURE__*/function () {
     key: "generateMap",
     value: function generateMap() {
       this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_2__["default"]({
-        height: 1200,
-        wall: "assets/sprites/rock.jpg",
-        floor: "assets/sprites/grass.png"
+        height: 5000,
+        wall: "assets/sprites/rock.png",
+        floor: "assets/sprites/grass.png",
+        outside: "assets/sprites/dirt.jpg"
       });
     }
   }, {
@@ -439,9 +440,7 @@ var Game = /*#__PURE__*/function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
-/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./game */ "./src/game.js");
-
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game */ "./src/game.js");
 
 document.addEventListener("DOMContentLoaded", function () {
   var canvas = document.getElementById('canvas');
@@ -450,7 +449,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var ctx = canvas.getContext('2d');
   canvas.width = DIM_X;
   canvas.height = DIM_Y;
-  var game = new _game__WEBPACK_IMPORTED_MODULE_1__["default"]({
+  var game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"]({
     DIM_X: DIM_X,
     DIM_Y: DIM_Y,
     ctx: ctx
@@ -487,14 +486,17 @@ var Map = /*#__PURE__*/function () {
 
     this.wall = options.wall;
     this.floor = options.floor;
+    this.outside = options.outside;
     this.wallEntities = [];
-    this.floorTiles = []; // instantiate borders of map
+    this.floorTiles = [];
+    this.background = []; // instantiate borders of map
 
     this.createBorder(); // instantiate bounds of map
 
     this.boundary(); // instantiate floor of map
 
     this.createFloor();
+    this.createOutside();
   }
 
   _createClass(Map, [{
@@ -534,6 +536,9 @@ var Map = /*#__PURE__*/function () {
   }, {
     key: "draw",
     value: function draw(ctx) {
+      this.background.forEach(function (tile) {
+        return tile.draw(ctx);
+      });
       this.floorTiles.forEach(function (tile) {
         return tile.draw(ctx);
       });
@@ -571,6 +576,9 @@ var Map = /*#__PURE__*/function () {
 
       this.wallEntities.forEach(function (entity) {
         return entity.move(dx, dy);
+      });
+      this.background.forEach(function (tile) {
+        return tile.move(dx, dy);
       });
     } // // ! Testing Only
     // drawBoundary (ctx) {
@@ -621,18 +629,34 @@ var Map = /*#__PURE__*/function () {
     key: "createFloor",
     value: function createFloor() {
       // n x n grass tiles
-      var n = 20; // offset is needed because floor tiles need to be outside the bounds of the
-      // borders
-
-      var offset = 900;
-      var dim = (this.height + 2 * offset) / n; // let dim = (this.height + offset) / n + offset;
+      var n = 20;
+      var dim = this.height / n;
 
       for (var i = 0; i < n; i++) {
         for (var j = 0; j < n; j++) {
           this.floorTiles.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+            pos: [i * dim, j * dim],
+            dim: [dim + this.spacing, dim + this.spacing],
+            src: this.floor
+          }));
+        }
+      }
+    }
+  }, {
+    key: "createOutside",
+    value: function createOutside() {
+      var n = 50;
+      var offset = 900;
+      var dim = (this.height + 2 * offset) / n;
+
+      for (var i = 0; i < n; i++) {
+        for (var j = 0; j < n; j++) {
+          // manually found best size, this prevents drawing too many assets
+          // optimized for 5000 height
+          if (i < 8 || j < 8 || i > 42 || j > 42) this.background.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
             pos: [i * dim - offset, j * dim - offset],
             dim: [dim, dim],
-            src: this.floor
+            src: this.outside
           }));
         }
       }
