@@ -19,8 +19,8 @@ export default class Game {
     let pos = [this.DIM_X / 2, this.DIM_Y / 2];
     this.player = new Slime({
       pos,
-      dim: [20, 20],
-      src: "assets/sprites/test-slime.png"
+      dim: [30, 30],
+      src: "assets/sprites/slime.png"
     });
 
     // this.entities.push(this.player);
@@ -29,9 +29,10 @@ export default class Game {
 
   generateMap () {
     this.sandBox = new Map({
-      height: 1200,
-      wall: "assets/sprites/rock.jpg",
-      floor: "assets/sprites/grass.png"
+      height: 5000,
+      wall: "assets/sprites/rock.png",
+      floor: "assets/sprites/grass.png",
+      outside: "assets/sprites/dirt.jpg",
     });
   }
 
