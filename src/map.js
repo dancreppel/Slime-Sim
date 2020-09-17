@@ -7,9 +7,11 @@ export default class Map {
     // pass in src for wall object and floor
     this.wall = options.wall;
     this.floor = options.floor;
+    this.outside = options.outside;
 
     this.wallEntities = [];
     this.floorTiles = [];
+    this.background = [];
 
     // instantiate borders of map
     this.createBorder();
@@ -17,6 +19,7 @@ export default class Map {
     this.boundary();
     // instantiate floor of map
     this.createFloor();
+    this.createOutside();
   }
 
   createBorder () {
@@ -64,6 +67,7 @@ export default class Map {
   }
 
   draw (ctx) {
+    this.background.forEach(tile => tile.draw(ctx));
     this.floorTiles.forEach(tile => tile.draw(ctx));
     this.wallEntities.forEach(entity => entity.draw(ctx));
     
@@ -99,6 +103,7 @@ export default class Map {
     this.floorTiles.forEach(tile => tile.move(dx, dy));
     // adjust pos for each wall object
     this.wallEntities.forEach(entity => entity.move(dx, dy));
+    this.background.forEach(tile => tile.move(dx, dy));
   }
 
   // // ! Testing Only
@@ -153,7 +158,8 @@ export default class Map {
     let n = 20;
     // offset is needed because floor tiles need to be outside the bounds of the
     // borders
-    let offset = 900;
+    // let offset = 900;
+    let offset = 0;
     let dim = (this.height + 2 * offset) / n;
     // let dim = (this.height + offset) / n + offset;
 
@@ -164,6 +170,27 @@ export default class Map {
             pos: [i * dim - offset, j * dim - offset],
             dim: [dim, dim],
             src: this.floor
+          })
+        );
+      }
+    }
+  }
+
+  createOutside () {
+    let n = 50;
+    let offset = 900;
+    let dim = (this.height + 2 * offset) / n;
+
+    for(let i = 0; i < n; i++) {
+      for(let j = 0; j < n; j++) {
+        // manually found best size, this prevents drawing too many assets
+        // optimized for 5000 height
+        if (i < 8 || j < 8 || i > 42 || j > 42)
+        this.background.push(
+          new Entity({
+            pos: [i * dim - offset, j * dim - offset],
+            dim: [dim, dim],
+            src: this.outside,
           })
         );
       }
