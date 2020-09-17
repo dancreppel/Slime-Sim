@@ -1,4 +1,3 @@
-import Entity from './entity';
 import Game from './game';
 
 document.addEventListener("DOMContentLoaded", () => {
