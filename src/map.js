@@ -12,14 +12,14 @@ export default class Map {
     this.wallEntities = [];
     this.floorTiles = [];
     this.background = [];
+    this.inanimateEntities = [];
 
-    // instantiate borders of map
+    // instantiate the following
     this.createBorder();
-    // instantiate bounds of map
     this.boundary();
-    // instantiate floor of map
     this.createFloor();
     this.createOutside();
+    this.createInanimateEntities();
   }
 
   createBorder () {
@@ -70,24 +70,17 @@ export default class Map {
     this.background.forEach(tile => tile.draw(ctx));
     this.floorTiles.forEach(tile => tile.draw(ctx));
     this.wallEntities.forEach(entity => entity.draw(ctx));
-    
-    // // ! Testing only
-    // this.drawBoundary(ctx);
   }
 
   boundary () {
     // Bounds are determined by their X or Y values
     // ex: X = 0 or Y = 10
-    
     // top bound in terms of Y
     this.topBound = this.spacing;
-    
     // right bound in terms of X
     this.rightBound = this.height;
-    
     // bottom bound in terms of Y
     this.bottomBound = this.height;
-    
     // left bound in terms of X
     this.leftBound = this.spacing;
   }
@@ -105,40 +98,6 @@ export default class Map {
     this.wallEntities.forEach(entity => entity.move(dx, dy));
     this.background.forEach(tile => tile.move(dx, dy));
   }
-
-  // // ! Testing Only
-  // drawBoundary (ctx) {
-  //   // ! Testing only
-  //   let bounds = [];
-  //   // top left corner
-  //   bounds.push([this.leftBound, this.topBound]);
-  //   // top right corner
-  //   bounds.push([this.rightBound, this.topBound]);
-  //   // bottom right corner
-  //   bounds.push([this.rightBound, this.bottomBound]);
-  //   // bottom left corner
-  //   bounds.push([this.leftBound, this.bottomBound]);
-
-  //   ctx.beginPath();
-  //   let startX = bounds[0][0];
-  //   let startY = bounds[0][1];
-
-  //   bounds.forEach((bound, idx) => {
-  //     if (idx === 0) {
-  //       ctx.moveTo(startX, startY);
-  //     } else {
-  //       let moveToX = bound[0];
-  //       let moveToY = bound[1];
-  //       ctx.lineTo(moveToX, moveToY);
-  //     }
-
-  //     // edge case when last index lineTo start
-  //     if (idx === bounds.length - 1) {
-  //       ctx.lineTo(startX, startY);
-  //     }
-  //   });
-  //   ctx.stroke();
-  // }
 
   outOfBounds (entity) {
     // check if entity's hitbox is above top bound
@@ -159,7 +118,6 @@ export default class Map {
     let dim = this.height / n;
     let xOffset = this.spacing / 2;
     let yOffset = this.spacing * .8;
-    console.log('success floor');
     for(let i = 0; i < n; i++) {
       for(let j = 0; j < n; j++) {
         this.floorTiles.push(
@@ -181,7 +139,7 @@ export default class Map {
     for(let i = 0; i < n; i++) {
       for(let j = 0; j < n; j++) {
         // manually found best size, this prevents drawing too many assets
-        // optimized for 5000 height
+        // optimized for 5000+ height
         if (i < 8 || j < 8 || i > 42 || j > 42)
         this.background.push(
           new Entity({
@@ -192,5 +150,25 @@ export default class Map {
         );
       }
     }
+  }
+
+  createInanimateEntities () {
+    // randomly place n trees
+    let treeDim = 200;
+    let numTrees = 50;
+    let xRange = this.rightBound - this.leftBound - treeDim;
+    let yRange = this.bottomBound - this.topBound - treeDim;
+    for(let i = 0; i < numTrees; i++) {
+      let randXPos = Math.random() * xRange + this.leftBound; 
+      let randYPos = Math.random() * yRange + this.topBound;
+      let newTree = new Entity({
+        pos: [randXPos, randYPos],
+        dim: [treeDim, treeDim],
+        src: 'assets/sprites/tree.png'
+      });
+      this.inanimateEntities.push(newTree);
+    }
+    // sort trees by y axis value so greater y-value objects are rendered on top
+    this.inanimateEntities.sort((a, b) => a.pos[1] - b.pos[1]);
   }
 }
