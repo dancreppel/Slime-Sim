@@ -297,7 +297,7 @@ var Game = /*#__PURE__*/function () {
     key: "generateMap",
     value: function generateMap() {
       this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_2__["default"]({
-        height: 5000,
+        height: 6000,
         wall: "assets/sprites/rock.png",
         floor: "assets/sprites/grass.png",
         outside: "assets/sprites/dirt.jpg"
@@ -305,14 +305,9 @@ var Game = /*#__PURE__*/function () {
     }
   }, {
     key: "generateEntities",
-    value: function generateEntities() {// * For testing
-      // this.rock = new Entity ({
-      //   pos: [500, 500],
-      //   dim: [200, 150],
-      //   src: 'assets/sprites/rock.jpg'
-      // });
-      // this.entities.push(this.rock);
-      // this.entities = this.sandBox.wallEntities;
+    value: function generateEntities() {
+      // add inanimate objects like trees to entities array
+      this.entities = this.entities.concat(this.sandBox.inanimateEntities);
     }
   }, {
     key: "render",
@@ -356,22 +351,23 @@ var Game = /*#__PURE__*/function () {
       // handle keydownfor arrow keys
       document.addEventListener('keydown', function (e) {
         e.preventDefault();
+        var speed = 30;
 
         switch (e.key) {
           case 'ArrowUp':
-            _this2.moveDirY = 10;
+            _this2.moveDirY = speed;
             break;
 
           case 'ArrowDown':
-            _this2.moveDirY = -10;
+            _this2.moveDirY = -speed;
             break;
 
           case 'ArrowLeft':
-            _this2.moveDirX = 10;
+            _this2.moveDirX = speed;
             break;
 
           case 'ArrowRight':
-            _this2.moveDirX = -10;
+            _this2.moveDirX = -speed;
             break;
 
           default:
@@ -489,20 +485,20 @@ var Map = /*#__PURE__*/function () {
     this.outside = options.outside;
     this.wallEntities = [];
     this.floorTiles = [];
-    this.background = []; // instantiate borders of map
+    this.background = [];
+    this.inanimateEntities = []; // instantiate the following
 
-    this.createBorder(); // instantiate bounds of map
-
-    this.boundary(); // instantiate floor of map
-
+    this.createBorder();
+    this.boundary();
     this.createFloor();
     this.createOutside();
+    this.createInanimateEntities();
   }
 
   _createClass(Map, [{
     key: "createBorder",
     value: function createBorder() {
-      var n = 40;
+      var n = 20;
       this.spacing = this.height / n;
       var spacing = this.spacing;
 
@@ -544,8 +540,7 @@ var Map = /*#__PURE__*/function () {
       });
       this.wallEntities.forEach(function (entity) {
         return entity.draw(ctx);
-      }); // // ! Testing only
-      // this.drawBoundary(ctx);
+      });
     }
   }, {
     key: "boundary",
@@ -580,37 +575,7 @@ var Map = /*#__PURE__*/function () {
       this.background.forEach(function (tile) {
         return tile.move(dx, dy);
       });
-    } // // ! Testing Only
-    // drawBoundary (ctx) {
-    //   // ! Testing only
-    //   let bounds = [];
-    //   // top left corner
-    //   bounds.push([this.leftBound, this.topBound]);
-    //   // top right corner
-    //   bounds.push([this.rightBound, this.topBound]);
-    //   // bottom right corner
-    //   bounds.push([this.rightBound, this.bottomBound]);
-    //   // bottom left corner
-    //   bounds.push([this.leftBound, this.bottomBound]);
-    //   ctx.beginPath();
-    //   let startX = bounds[0][0];
-    //   let startY = bounds[0][1];
-    //   bounds.forEach((bound, idx) => {
-    //     if (idx === 0) {
-    //       ctx.moveTo(startX, startY);
-    //     } else {
-    //       let moveToX = bound[0];
-    //       let moveToY = bound[1];
-    //       ctx.lineTo(moveToX, moveToY);
-    //     }
-    //     // edge case when last index lineTo start
-    //     if (idx === bounds.length - 1) {
-    //       ctx.lineTo(startX, startY);
-    //     }
-    //   });
-    //   ctx.stroke();
-    // }
-
+    }
   }, {
     key: "outOfBounds",
     value: function outOfBounds(entity) {
@@ -631,12 +596,14 @@ var Map = /*#__PURE__*/function () {
       // n x n grass tiles
       var n = 20;
       var dim = this.height / n;
+      var xOffset = this.spacing / 2;
+      var yOffset = this.spacing * .8;
 
       for (var i = 0; i < n; i++) {
         for (var j = 0; j < n; j++) {
           this.floorTiles.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-            pos: [i * dim, j * dim],
-            dim: [dim + this.spacing, dim + this.spacing],
+            pos: [i * dim + xOffset, j * dim + yOffset],
+            dim: [dim, dim],
             src: this.floor
           }));
         }
@@ -652,7 +619,7 @@ var Map = /*#__PURE__*/function () {
       for (var i = 0; i < n; i++) {
         for (var j = 0; j < n; j++) {
           // manually found best size, this prevents drawing too many assets
-          // optimized for 5000 height
+          // optimized for 5000+ height
           if (i < 8 || j < 8 || i > 42 || j > 42) this.background.push(new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
             pos: [i * dim - offset, j * dim - offset],
             dim: [dim, dim],
@@ -660,6 +627,31 @@ var Map = /*#__PURE__*/function () {
           }));
         }
       }
+    }
+  }, {
+    key: "createInanimateEntities",
+    value: function createInanimateEntities() {
+      // randomly place n trees
+      var treeDim = 200;
+      var numTrees = 50;
+      var xRange = this.rightBound - this.leftBound - treeDim;
+      var yRange = this.bottomBound - this.topBound - treeDim;
+
+      for (var i = 0; i < numTrees; i++) {
+        var randXPos = Math.random() * xRange + this.leftBound;
+        var randYPos = Math.random() * yRange + this.topBound;
+        var newTree = new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
+          pos: [randXPos, randYPos],
+          dim: [treeDim, treeDim],
+          src: 'assets/sprites/tree.png'
+        });
+        this.inanimateEntities.push(newTree);
+      } // sort trees by y axis value so greater y-value objects are rendered on top
+
+
+      this.inanimateEntities.sort(function (a, b) {
+        return a.pos[1] - b.pos[1];
+      });
     }
   }]);
 

@@ -37,16 +37,8 @@ export default class Game {
   }
 
   generateEntities () {
-    // * For testing
-    // this.rock = new Entity ({
-    //   pos: [500, 500],
-    //   dim: [200, 150],
-    //   src: 'assets/sprites/rock.jpg'
-    // });
-    // this.entities.push(this.rock);
-
-    // this.entities = this.sandBox.wallEntities;
-
+    // add inanimate objects like trees to entities array
+    this.entities = this.entities.concat(this.sandBox.inanimateEntities);
   }
 
   render (ctx) {
