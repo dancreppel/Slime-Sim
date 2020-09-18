@@ -29,7 +29,7 @@ export default class Game {
 
   generateMap () {
     this.sandBox = new Map({
-      height: 5000,
+      height: 6000,
       wall: "assets/sprites/rock.png",
       floor: "assets/sprites/grass.png",
       outside: "assets/sprites/dirt.jpg",
@@ -77,18 +77,19 @@ export default class Game {
     // handle keydownfor arrow keys
     document.addEventListener('keydown', e => {
       e.preventDefault();
+      let speed = 30;
       switch (e.key) {
         case 'ArrowUp':
-          this.moveDirY = 10;
+          this.moveDirY = speed;
           break;
         case 'ArrowDown':
-          this.moveDirY = -10;
+          this.moveDirY = -speed;
           break;
         case 'ArrowLeft':
-          this.moveDirX = 10;
+          this.moveDirX = speed;
           break;
         case 'ArrowRight':
-          this.moveDirX = -10;
+          this.moveDirX = -speed;
           break;
         default:
           break;
