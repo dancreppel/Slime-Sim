@@ -23,7 +23,7 @@ export default class Map {
   }
 
   createBorder () {
-    let n = 40;
+    let n = 20;
     this.spacing = this.height / n;
     let spacing = this.spacing;
 
@@ -157,13 +157,15 @@ export default class Map {
     // n x n grass tiles
     let n = 20;
     let dim = this.height / n;
-
+    let xOffset = this.spacing / 2;
+    let yOffset = this.spacing * .8;
+    console.log('success floor');
     for(let i = 0; i < n; i++) {
       for(let j = 0; j < n; j++) {
         this.floorTiles.push(
           new Entity({
-            pos: [i * dim, j * dim],
-            dim: [dim + this.spacing, dim + this.spacing],
+            pos: [i * dim + xOffset, j * dim + yOffset],
+            dim: [dim, dim],
             src: this.floor,
           })
         );
