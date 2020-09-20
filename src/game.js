@@ -62,6 +62,7 @@ export default class Game {
       if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
         this.move(true);
       }
+      this.player.eat(this.creatures);
     }, 16.667)
   }
 
