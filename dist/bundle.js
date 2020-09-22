@@ -86,6 +86,59 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/creature.js":
+/*!*************************!*\
+  !*** ./src/creature.js ***!
+  \*************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Creature; });
+/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var Creature = /*#__PURE__*/function (_Entity) {
+  _inherits(Creature, _Entity);
+
+  var _super = _createSuper(Creature);
+
+  function Creature(options) {
+    _classCallCheck(this, Creature);
+
+    return _super.call(this, options); // this.pos
+    // this.dim
+    // this.image
+    // this.hitboxCenter
+    // this.hitboxRadius
+  }
+
+  return Creature;
+}(_entity__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./src/entity.js":
 /*!***********************!*\
   !*** ./src/entity.js ***!
@@ -191,13 +244,15 @@ var Entity = /*#__PURE__*/function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Game; });
 /* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
-/* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
-/* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./map */ "./src/map.js");
+/* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
+/* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
+/* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./map */ "./src/map.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -221,18 +276,17 @@ var Game = /*#__PURE__*/function () {
     value: function createPlayer() {
       // center pos in the middle of the canvas object
       var pos = [this.DIM_X / 2, this.DIM_Y / 2];
-      this.player = new _slime__WEBPACK_IMPORTED_MODULE_1__["default"]({
+      this.player = new _slime__WEBPACK_IMPORTED_MODULE_2__["default"]({
         pos: pos,
         dim: [30, 30],
         src: "assets/sprites/slime.png"
       }); // this.entities.push(this.player);
-
-      this.creatures.push(this.player);
+      // this.creatures.push(this.player);
     }
   }, {
     key: "generateMap",
     value: function generateMap() {
-      this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_2__["default"]({
+      this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_3__["default"]({
         height: 6000,
         wall: "assets/sprites/rock.png",
         floor: "assets/sprites/grass.png",
@@ -246,6 +300,17 @@ var Game = /*#__PURE__*/function () {
       this.entities = this.entities.concat(this.sandBox.inanimateEntities);
     }
   }, {
+    key: "generateEnemies",
+    value: function generateEnemies() {
+      // ! for testing
+      var mouse = new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
+        pos: [500, 500],
+        dim: [20, 20],
+        src: 'assets/sprites/mouse.png'
+      });
+      this.creatures.push(mouse);
+    }
+  }, {
     key: "render",
     value: function render(ctx) {
       ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
@@ -256,6 +321,7 @@ var Game = /*#__PURE__*/function () {
       this.creatures.forEach(function (creature) {
         return creature.draw(ctx);
       });
+      this.player.draw(ctx);
     }
   }, {
     key: "start",
@@ -265,6 +331,7 @@ var Game = /*#__PURE__*/function () {
       this.setKeyBinds();
       this.generateMap();
       this.generateEntities();
+      this.generateEnemies();
       this.createPlayer(); // refresh 60 times per second
 
       setInterval(function () {
@@ -289,7 +356,7 @@ var Game = /*#__PURE__*/function () {
       // handle keydownfor arrow keys
       document.addEventListener('keydown', function (e) {
         e.preventDefault();
-        var speed = 30;
+        var speed = 10;
 
         switch (e.key) {
           case 'ArrowUp':
@@ -337,9 +404,15 @@ var Game = /*#__PURE__*/function () {
         this.entities.forEach(function (entity) {
           return entity.move(-_this3.moveDirX, -_this3.moveDirY);
         });
+        this.creatures.forEach(function (entity) {
+          return entity.move(-_this3.moveDirX, -_this3.moveDirY);
+        });
         this.sandBox.move(-this.moveDirX, -this.moveDirY);
       } else {
         this.entities.forEach(function (entity) {
+          return entity.move(_this3.moveDirX, _this3.moveDirY);
+        });
+        this.creatures.forEach(function (entity) {
           return entity.move(_this3.moveDirX, _this3.moveDirY);
         });
         this.sandBox.move(this.moveDirX, this.moveDirY);
@@ -605,9 +678,79 @@ var Map = /*#__PURE__*/function () {
   !*** ./src/slime.js ***!
   \**********************/
 /*! exports provided: default */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-throw new Error("Module build failed (from ./node_modules/babel-loader/lib/index.js):\nSyntaxError: /home/dcrep/Desktop/Slime-Simulator/src/slime.js: Deleting local variable in strict mode (15:31)\n\n\u001b[0m \u001b[90m 13 | \u001b[39m  eat (enemies) {\u001b[0m\n\u001b[0m \u001b[90m 14 | \u001b[39m    enemies\u001b[33m.\u001b[39mforEach(enemy \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 | \u001b[39m      \u001b[36mif\u001b[39m (\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39meatable(enemy)) \u001b[36mdelete\u001b[39m enemy\u001b[33m;\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m    | \u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 16 | \u001b[39m    })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 17 | \u001b[39m  }\u001b[0m\n\u001b[0m \u001b[90m 18 | \u001b[39m\u001b[0m\n    at Parser._raise (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:757:17)\n    at Parser.raiseWithData (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:750:17)\n    at Parser.raise (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:744:17)\n    at Parser.parseMaybeUnary (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9657:16)\n    at Parser.parseExprOps (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9538:23)\n    at Parser.parseMaybeConditional (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9511:23)\n    at Parser.parseMaybeAssign (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9466:21)\n    at Parser.parseExpression (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9418:23)\n    at Parser.parseStatementContent (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11332:23)\n    at Parser.parseStatement (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11203:17)\n    at Parser.parseIfStatement (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11555:28)\n    at Parser.parseStatementContent (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11248:21)\n    at Parser.parseStatement (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11203:17)\n    at Parser.parseBlockOrModuleBlockBody (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11778:25)\n    at Parser.parseBlockBody (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11764:10)\n    at Parser.parseBlock (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:11748:10)\n    at Parser.parseFunctionBody (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:10751:24)\n    at Parser.parseArrowExpression (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:10720:10)\n    at Parser.parseExprAtom (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9992:18)\n    at Parser.parseExprSubscripts (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9688:23)\n    at Parser.parseMaybeUnary (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9668:21)\n    at Parser.parseExprOps (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9538:23)\n    at Parser.parseMaybeConditional (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9511:23)\n    at Parser.parseMaybeAssign (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9466:21)\n    at Parser.parseExprListItem (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:10839:18)\n    at Parser.parseCallExpressionArguments (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9882:22)\n    at Parser.parseSubscript (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9782:31)\n    at Parser.parseSubscripts (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9711:19)\n    at Parser.parseExprSubscripts (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9694:17)\n    at Parser.parseMaybeUnary (/home/dcrep/Desktop/Slime-Simulator/node_modules/@babel/parser/lib/index.js:9668:21)");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Slime; });
+/* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var Slime = /*#__PURE__*/function (_Creature) {
+  _inherits(Slime, _Creature);
+
+  var _super = _createSuper(Slime);
+
+  function Slime(options) {
+    _classCallCheck(this, Slime);
+
+    return _super.call(this, options);
+  }
+
+  _createClass(Slime, [{
+    key: "move",
+    value: function move() {// Do not move because the player should be in the center of the frame of
+      // reference
+    }
+  }, {
+    key: "eat",
+    value: function eat(enemies) {
+      var _this = this;
+
+      enemies.forEach(function (enemy, i) {
+        if (_this.eatable(enemy)) {
+          // remove enemy
+          delete enemies[i];
+        }
+      });
+    }
+  }, {
+    key: "eatable",
+    value: function eatable(enemy) {
+      var dx = this.hitboxCenter[0] - enemy.hitboxCenter[0];
+      var dy = this.hitboxCenter[1] - enemy.hitboxCenter[1];
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var minDistance = this.hitboxRadius;
+      if (distance < minDistance) return true;else return false;
+    }
+  }]);
+
+  return Slime;
+}(_creature__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ })
 

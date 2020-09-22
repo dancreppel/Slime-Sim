@@ -1,4 +1,5 @@
 import Entity from './entity';
+import Creature from './creature'
 import Slime from './slime';
 import Map from './map';
 
@@ -24,7 +25,7 @@ export default class Game {
     });
 
     // this.entities.push(this.player);
-    this.creatures.push(this.player);
+    // this.creatures.push(this.player);
   }
 
   generateMap () {
@@ -41,17 +42,30 @@ export default class Game {
     this.entities = this.entities.concat(this.sandBox.inanimateEntities);
   }
 
+  generateEnemies () {
+    // ! for testing
+    let mouse = new Creature ({
+      pos: [500,500],
+      dim: [20,20],
+      src: 'assets/sprites/mouse.png'
+    });
+
+    this.creatures.push(mouse);
+  }
+
   render (ctx) {
     ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
     this.sandBox.draw(ctx);
     this.entities.forEach(entity => entity.draw(ctx));
     this.creatures.forEach(creature => creature.draw(ctx));
+    this.player.draw(ctx);
   }
 
   start () {
     this.setKeyBinds();
     this.generateMap();
     this.generateEntities();
+    this.generateEnemies();
     this.createPlayer();
     // refresh 60 times per second
     setInterval(() => {
@@ -70,7 +84,7 @@ export default class Game {
     // handle keydownfor arrow keys
     document.addEventListener('keydown', e => {
       e.preventDefault();
-      let speed = 30;
+      let speed = 10;
       switch (e.key) {
         case 'ArrowUp':
           this.moveDirY = speed;
@@ -112,9 +126,17 @@ export default class Game {
         entity.move(-this.moveDirX, -this.moveDirY)
       );
 
+      this.creatures.forEach((entity) =>
+        entity.move(-this.moveDirX, -this.moveDirY)
+      );
+
       this.sandBox.move(-this.moveDirX, -this.moveDirY);
     } else {
       this.entities.forEach((entity) =>
+        entity.move(this.moveDirX, this.moveDirY)
+      );
+
+      this.creatures.forEach((entity) =>
         entity.move(this.moveDirX, this.moveDirY)
       );
 
