@@ -12,7 +12,10 @@ export default class Slime extends Creature {
 
   eat (enemies) {
     enemies.forEach(enemy => {
-      if (this.eatable(enemy)) delete enemy;
+      if (this.eatable(enemy)) {
+        // remove enemy
+        enemy = null;
+      }
     });
   }
 
