@@ -62,7 +62,6 @@ export default class Game {
   }
 
   start () {
-    console.log('live build');
     this.setKeyBinds();
     this.generateMap();
     this.generateEntities();

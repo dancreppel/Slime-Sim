@@ -328,7 +328,6 @@ var Game = /*#__PURE__*/function () {
     value: function start() {
       var _this = this;
 
-      console.log('live build');
       this.setKeyBinds();
       this.generateMap();
       this.generateEntities();
