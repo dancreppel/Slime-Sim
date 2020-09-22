@@ -46,7 +46,7 @@ export default class Game {
     // ! for testing
     let mouse = new Creature ({
       pos: [500,500],
-      dim: [20,20],
+      dim: [60,60],
       src: 'assets/sprites/mouse.png'
     });
 

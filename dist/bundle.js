@@ -305,7 +305,7 @@ var Game = /*#__PURE__*/function () {
       // ! for testing
       var mouse = new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
         pos: [500, 500],
-        dim: [20, 20],
+        dim: [60, 60],
         src: 'assets/sprites/mouse.png'
       });
       this.creatures.push(mouse);
@@ -743,7 +743,10 @@ var Slime = /*#__PURE__*/function (_Creature) {
       var dy = this.hitboxCenter[1] - enemy.hitboxCenter[1];
       var distance = Math.sqrt(dx * dx + dy * dy);
       var minDistance = this.hitboxRadius;
-      if (distance < minDistance) return true;else return false;
+
+      if (distance < minDistance && this.hitboxRadius > enemy.hitboxRadius) {
+        return true;
+      } else return false;
     }
   }]);
 
