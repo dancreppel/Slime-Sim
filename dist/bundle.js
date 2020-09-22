@@ -303,12 +303,19 @@ var Game = /*#__PURE__*/function () {
     key: "generateEnemies",
     value: function generateEnemies() {
       // ! for testing
-      var mouse = new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
-        pos: [500, 500],
-        dim: [60, 60],
-        src: 'assets/sprites/mouse.png'
-      });
-      this.creatures.push(mouse);
+      for (var i = 0; i < 20; i++) {
+        this.creatures.push(new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
+          pos: [500, 25 * i + 500],
+          dim: [20, 20],
+          src: "assets/sprites/mouse.png"
+        }));
+      } // let mouse = new Creature ({
+      //   pos: [500,500],
+      //   dim: [20,20],
+      //   src: 'assets/sprites/mouse.png'
+      // });
+      // this.creatures.push(mouse);
+
     }
   }, {
     key: "render",
@@ -346,6 +353,8 @@ var Game = /*#__PURE__*/function () {
         }
 
         _this.player.eat(_this.creatures);
+
+        if (_this.player.dead) console.log('game over');
       }, 16.667);
     }
   }, {
@@ -731,7 +740,9 @@ var Slime = /*#__PURE__*/function (_Creature) {
 
       enemies.forEach(function (enemy, i) {
         if (_this.eatable(enemy)) {
-          // remove enemy
+          _this.grow(enemy); // remove enemy
+
+
           delete enemies[i];
         }
       });
@@ -744,9 +755,31 @@ var Slime = /*#__PURE__*/function (_Creature) {
       var distance = Math.sqrt(dx * dx + dy * dy);
       var minDistance = this.hitboxRadius;
 
+      if (distance < minDistance && this.hitboxRadius < enemy.hitboxRadius) {
+        this.dead = true;
+      }
+
       if (distance < minDistance && this.hitboxRadius > enemy.hitboxRadius) {
         return true;
       } else return false;
+    }
+  }, {
+    key: "grow",
+    value: function grow(enemy) {
+      var _this2 = this;
+
+      var enemyVolume = Math.pow(enemy.hitboxRadius, 3) * Math.PI * 4 / 3;
+      var playerVolume = Math.pow(this.hitboxRadius, 3) * Math.PI * 4 / 3;
+      var newVolume = enemyVolume + playerVolume;
+      var newRadius = Math.pow(newVolume / Math.PI * 3 / 4, 1 / 3); // apply new radius
+
+      this.hitboxRadius = newRadius; // apply new dimensions using diameter
+
+      this.dim = [newRadius * 2, newRadius * 2]; // adjust hitbox center
+
+      this.hitboxCenter = this.pos.map(function (_, i) {
+        return _this2.pos[i] + _this2.dim[i] / 2;
+      });
     }
   }]);
 
