@@ -11,17 +11,17 @@ export default class Slime extends Creature {
   }
 
   eat (enemies) {
-    enemies.forEach(enemy => {
+    enemies.forEach((enemy, i) => {
       if (this.eatable(enemy)) {
         // remove enemy
-        enemy = null;
+        delete enemies[i];
       }
     });
   }
 
   eatable (enemy) {
-    let dx = this.hitboxCenter[0] - entity.hitboxCenter[0];
-    let dy = this.hitboxCenter[1] - entity.hitboxCenter[1];
+    let dx = this.hitboxCenter[0] - enemy.hitboxCenter[0];
+    let dy = this.hitboxCenter[1] - enemy.hitboxCenter[1];
     let distance = Math.sqrt(dx * dx + dy * dy);
     let minDistance = this.hitboxRadius;
 
