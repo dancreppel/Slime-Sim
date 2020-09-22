@@ -25,7 +25,8 @@ export default class Slime extends Creature {
     let distance = Math.sqrt(dx * dx + dy * dy);
     let minDistance = this.hitboxRadius;
 
-    if (distance < minDistance) return true;
-    else return false;
+    if (distance < minDistance && this.hitboxRadius > enemy.hitboxRadius) {
+      return true;
+    } else return false;
   }
 }
