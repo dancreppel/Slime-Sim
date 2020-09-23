@@ -309,12 +309,14 @@ var Game = /*#__PURE__*/function () {
           dim: [20, 20],
           src: "assets/sprites/mouse.png"
         }));
-      } // let mouse = new Creature ({
-      //   pos: [500,500],
-      //   dim: [20,20],
-      //   src: 'assets/sprites/mouse.png'
-      // });
-      // this.creatures.push(mouse);
+      } // let creatureDim = {
+      //   mouse: 20,
+      // }
+      // let numType = 20;
+      // let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
+      // let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
+      // for(let i = 0; i < numType; i++) {
+      // }
 
     }
   }, {
