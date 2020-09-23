@@ -13,6 +13,7 @@ export default class Slime extends Creature {
   eat (enemies) {
     enemies.forEach((enemy, i) => {
       if (this.eatable(enemy)) {
+        this.grow(enemy);
         // remove enemy
         delete enemies[i];
       }
@@ -25,8 +26,25 @@ export default class Slime extends Creature {
     let distance = Math.sqrt(dx * dx + dy * dy);
     let minDistance = this.hitboxRadius;
 
+    if (distance < minDistance && this.hitboxRadius < enemy.hitboxRadius) {
+      this.dead = true;
+    }
+
     if (distance < minDistance && this.hitboxRadius > enemy.hitboxRadius) {
       return true;
     } else return false;
+  }
+
+  grow (enemy) {
+    let enemyVolume = Math.pow(enemy.hitboxRadius, 3) * Math.PI * 4 / 3;
+    let playerVolume = Math.pow(this.hitboxRadius, 3) * Math.PI * 4 / 3;
+    let newVolume = enemyVolume + playerVolume;
+    let newRadius = Math.pow(newVolume / Math.PI * 3 / 4, 1 / 3);
+    // apply new radius
+    this.hitboxRadius = newRadius;
+    // apply new dimensions using diameter
+    this.dim = [newRadius * 2, newRadius * 2];
+    // adjust hitbox center
+    this.hitboxCenter = this.pos.map((_, i) => this.pos[i] + this.dim[i] / 2);
   }
 }

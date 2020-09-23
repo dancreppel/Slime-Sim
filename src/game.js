@@ -44,13 +44,25 @@ export default class Game {
 
   generateEnemies () {
     // ! for testing
-    let mouse = new Creature ({
-      pos: [500,500],
-      dim: [60,60],
-      src: 'assets/sprites/mouse.png'
-    });
+    for(let i = 0; i < 20; i++) {
+      this.creatures.push(
+        new Creature({
+          pos: [500, 25 * i + 500],
+          dim: [20, 20],
+          src: "assets/sprites/mouse.png",
+        })
+      );
+    }
+    // let creatureDim = {
+    //   mouse: 20,
+    // }
 
-    this.creatures.push(mouse);
+    // let numType = 20;
+    // let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
+    // let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
+    // for(let i = 0; i < numType; i++) {
+
+    // }
   }
 
   render (ctx) {
@@ -77,6 +89,7 @@ export default class Game {
         this.move(true);
       }
       this.player.eat(this.creatures);
+      if (this.player.dead) console.log('game over');
     }, 16.667)
   }
 
