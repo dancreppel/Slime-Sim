@@ -1,9 +1,10 @@
 import Entity from './entity';
+import * as Util from './util';
 
 export default class Map {
   constructor (options) {
+    this.player = options.player;
     this.height = options.height;
-
     // pass in src for wall object and floor
     this.wall = options.wall;
     this.floor = options.floor;
@@ -154,21 +155,25 @@ export default class Map {
 
   createInanimateEntities () {
     // randomly place n trees
-    let treeDim = 200;
-    let numTrees = 50;
+    let treeDim = 300;
+    let numTrees = 30;
     let xRange = this.rightBound - this.leftBound - treeDim;
     let yRange = this.bottomBound - this.topBound - treeDim;
+
     for(let i = 0; i < numTrees; i++) {
-      let randXPos = Math.random() * xRange + this.leftBound; 
-      let randYPos = Math.random() * yRange + this.topBound;
+      let randPos = Util.randPos(xRange, yRange, this.leftBound, this.topBound);
+      const entities = this.inanimateEntities.concat(this.player);
       let newTree = new Entity({
-        pos: [randXPos, randYPos],
+        pos: [randPos[0], randPos[1]],
         dim: [treeDim, treeDim],
         src: 'assets/sprites/tree.png'
       });
-      this.inanimateEntities.push(newTree);
+
+      // if the tree overlaps the player or other tree redo iteration
+      let invalidPos = entities.some(entity => newTree.isCollision(entity));
+      if (invalidPos) i--;
+      else this.inanimateEntities.push(newTree);
+      
     }
-    // sort trees by y axis value so greater y-value objects are rendered on top
-    this.inanimateEntities.sort((a, b) => a.pos[1] - b.pos[1]);
   }
 }

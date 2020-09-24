@@ -99,7 +99,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
@@ -123,14 +139,79 @@ var Creature = /*#__PURE__*/function (_Entity) {
   var _super = _createSuper(Creature);
 
   function Creature(options) {
+    var _this;
+
     _classCallCheck(this, Creature);
 
-    return _super.call(this, options); // this.pos
-    // this.dim
-    // this.image
-    // this.hitboxCenter
-    // this.hitboxRadius
-  }
+    _this = _super.call(this, options);
+    _this.numMoves = 0;
+    _this.movementDir = "";
+    _this.moveDirs = ["up", "down", "left", "right"];
+    return _this;
+  } // // ! for testing
+  // draw(ctx) {
+  //   ctx.drawImage(
+  //     this.image,
+  //     this.pos[0],
+  //     this.pos[1],
+  //     this.dim[0],
+  //     this.dim[1]
+  //   );
+  //   this.drawHitbox();
+  // }
+
+
+  _createClass(Creature, [{
+    key: "movement",
+    value: function movement(movementSpeed, entities, sandbox) {
+      // ai movement
+      var speed = movementSpeed / 10;
+      var n = 50;
+      var m = 100; // make copies of previous pos and hitbox
+
+      var prevPos = _toConsumableArray(this.pos);
+
+      var prevHitboxPos = _toConsumableArray(this.hitboxCenter); // allow number of moves to be between n and n + m
+
+
+      if (this.numMoves === 0) {
+        this.numMoves = Math.ceil(Math.random() * m) + n;
+        var randIndex = Math.floor(Math.random() * this.moveDirs.length);
+        this.movementDir = this.moveDirs[randIndex];
+      } else {
+        this.numMoves--;
+
+        switch (this.movementDir) {
+          case "up":
+            this.pos[1] -= speed;
+            this.hitboxCenter[1] -= speed;
+            break;
+
+          case "down":
+            this.pos[1] += speed;
+            this.hitboxCenter[1] += speed;
+            break;
+
+          case "left":
+            this.pos[0] -= speed;
+            this.hitboxCenter[0] -= speed;
+            break;
+
+          case "right":
+            this.pos[0] += speed;
+            this.hitboxCenter[0] += speed;
+
+          default:
+            break;
+        }
+
+        if (this.invalidPos(entities) || sandbox.outOfBounds(this)) {
+          this.pos = prevPos;
+          this.hitboxCenter = prevHitboxPos;
+        }
+      }
+    }
+  }]);
 
   return Creature;
 }(_entity__WEBPACK_IMPORTED_MODULE_0__["default"]);
@@ -198,7 +279,7 @@ var Entity = /*#__PURE__*/function () {
     key: "hitboxRadius",
     value: function hitboxRadius() {
       return this.dim[0] < this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
-    } // ! for testing
+    } // // ! for testing
     // drawHitbox() {
     //   const canvas = document.getElementById("canvas");
     //   const ctx = canvas.getContext("2d");
@@ -224,6 +305,15 @@ var Entity = /*#__PURE__*/function () {
       var minDistance = this.hitboxRadius + entity.hitboxRadius;
       if (distance < minDistance) return true;else return false;
     }
+  }, {
+    key: "invalidPos",
+    value: function invalidPos(entities) {
+      var _this2 = this;
+
+      return entities.some(function (entity) {
+        return _this2.isCollision(entity);
+      });
+    }
   }]);
 
   return Entity;
@@ -247,11 +337,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
 /* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
 /* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./map */ "./src/map.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./src/util.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -265,6 +357,7 @@ var Game = /*#__PURE__*/function () {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
+    this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
     this.moveDirX = 0;
@@ -280,13 +373,13 @@ var Game = /*#__PURE__*/function () {
         pos: pos,
         dim: [30, 30],
         src: "assets/sprites/slime.png"
-      }); // this.entities.push(this.player);
-      // this.creatures.push(this.player);
+      });
     }
   }, {
     key: "generateMap",
     value: function generateMap() {
       this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_3__["default"]({
+        player: this.player,
         height: 6000,
         wall: "assets/sprites/rock.png",
         floor: "assets/sprites/grass.png",
@@ -302,22 +395,41 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "generateEnemies",
     value: function generateEnemies() {
-      // ! for testing
-      for (var i = 0; i < 20; i++) {
-        this.creatures.push(new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
-          pos: [500, 25 * i + 500],
-          dim: [20, 20],
-          src: "assets/sprites/mouse.png"
-        }));
-      } // let creatureDim = {
-      //   mouse: 20,
-      // }
-      // let numType = 20;
-      // let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
-      // let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
-      // for(let i = 0; i < numType; i++) {
-      // }
+      var creatures = {
+        mouse: {
+          dim: 20,
+          src: 'assets/sprites/mouse.png'
+        }
+      };
+      var entities = this.entities.concat(this.player);
+      var numType = 20;
 
+      for (var type in creatures) {
+        var dim = creatures[type].dim;
+        var src = creatures[type].src;
+        var xRange = this.sandBox.rightBound - this.sandBox.leftBound - dim;
+        var yRange = this.sandBox.bottomBound - this.sandBox.topBound - dim;
+        var i = 1;
+
+        while (i < numType) {
+          var xOffset = this.sandBox.leftBound;
+          var yOffset = this.sandBox.topBound;
+          var randPos = _util__WEBPACK_IMPORTED_MODULE_4__["randPos"](xRange, yRange, xOffset, yOffset);
+          var newCreature = new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
+            pos: randPos,
+            dim: [dim, dim],
+            src: src
+          }); // const invalidPos = entities.some(entity => 
+          //   newCreature.isCollision(entity)
+          // );
+          // only push new creature to creatures array if it is in a valid pos
+
+          if (!newCreature.invalidPos(entities)) {
+            this.creatures.push(newCreature);
+            i++;
+          }
+        }
+      }
     }
   }, {
     key: "render",
@@ -338,16 +450,18 @@ var Game = /*#__PURE__*/function () {
       var _this = this;
 
       this.setKeyBinds();
+      this.createPlayer();
       this.generateMap();
       this.generateEntities();
-      this.generateEnemies();
-      this.createPlayer(); // refresh 60 times per second
+      this.generateEnemies(); // refresh 60 times per second
 
       setInterval(function () {
         _this.render(_this.ctx); // regular move
 
 
-        _this.move(false); // if a collision occurs, reverse move
+        _this.move(false);
+
+        _this.aiMovement(); // if a collision occurs, reverse move
 
 
         if (_this.checkCollision() || _this.sandBox.outOfBounds(_this.player)) {
@@ -357,7 +471,7 @@ var Game = /*#__PURE__*/function () {
         _this.player.eat(_this.creatures);
 
         if (_this.player.dead) console.log('game over');
-      }, 16.667);
+      }, 17);
     }
   }, {
     key: "setKeyBinds",
@@ -367,7 +481,7 @@ var Game = /*#__PURE__*/function () {
       // handle keydownfor arrow keys
       document.addEventListener('keydown', function (e) {
         e.preventDefault();
-        var speed = 10;
+        var speed = _this2.movementSpeed;
 
         switch (e.key) {
           case 'ArrowUp':
@@ -415,21 +529,19 @@ var Game = /*#__PURE__*/function () {
         this.entities.forEach(function (entity) {
           return entity.move(-_this3.moveDirX, -_this3.moveDirY);
         });
-        this.creatures.forEach(function (entity) {
-          return entity.move(-_this3.moveDirX, -_this3.moveDirY);
+        this.creatures.forEach(function (creature) {
+          return creature.move(-_this3.moveDirX, -_this3.moveDirY);
         });
         this.sandBox.move(-this.moveDirX, -this.moveDirY);
       } else {
         this.entities.forEach(function (entity) {
           return entity.move(_this3.moveDirX, _this3.moveDirY);
         });
-        this.creatures.forEach(function (entity) {
-          return entity.move(_this3.moveDirX, _this3.moveDirY);
+        this.creatures.forEach(function (creature) {
+          return creature.move(_this3.moveDirX, _this3.moveDirY);
         });
         this.sandBox.move(this.moveDirX, this.moveDirY);
-      } // this.player.move();
-      // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
-
+      }
     }
   }, {
     key: "checkCollision",
@@ -438,6 +550,15 @@ var Game = /*#__PURE__*/function () {
 
       return this.entities.some(function (entity) {
         return entity.isCollision(_this4.player);
+      });
+    }
+  }, {
+    key: "aiMovement",
+    value: function aiMovement() {
+      var _this5 = this;
+
+      this.creatures.forEach(function (creature) {
+        return creature.movement(_this5.movementSpeed, _this5.entities, _this5.sandBox);
       });
     }
   }]);
@@ -465,12 +586,14 @@ document.addEventListener("DOMContentLoaded", function () {
   var DIM_X = 1600;
   var DIM_Y = 900;
   var ctx = canvas.getContext('2d');
+  var movementSpeed = 10;
   canvas.width = DIM_X;
   canvas.height = DIM_Y;
   var game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"]({
     DIM_X: DIM_X,
     DIM_Y: DIM_Y,
-    ctx: ctx
+    ctx: ctx,
+    movementSpeed: movementSpeed
   });
   game.start();
 });
@@ -488,6 +611,7 @@ document.addEventListener("DOMContentLoaded", function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Map; });
 /* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./src/util.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -496,10 +620,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var Map = /*#__PURE__*/function () {
   function Map(options) {
     _classCallCheck(this, Map);
 
+    this.player = options.player;
     this.height = options.height; // pass in src for wall object and floor
 
     this.wall = options.wall;
@@ -653,27 +779,35 @@ var Map = /*#__PURE__*/function () {
   }, {
     key: "createInanimateEntities",
     value: function createInanimateEntities() {
+      var _this = this;
+
       // randomly place n trees
-      var treeDim = 200;
-      var numTrees = 50;
+      var treeDim = 300;
+      var numTrees = 30;
       var xRange = this.rightBound - this.leftBound - treeDim;
       var yRange = this.bottomBound - this.topBound - treeDim;
 
-      for (var i = 0; i < numTrees; i++) {
-        var randXPos = Math.random() * xRange + this.leftBound;
-        var randYPos = Math.random() * yRange + this.topBound;
+      var _loop = function _loop(_i) {
+        var randPos = _util__WEBPACK_IMPORTED_MODULE_1__["randPos"](xRange, yRange, _this.leftBound, _this.topBound);
+
+        var entities = _this.inanimateEntities.concat(_this.player);
+
         var newTree = new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-          pos: [randXPos, randYPos],
+          pos: [randPos[0], randPos[1]],
           dim: [treeDim, treeDim],
           src: 'assets/sprites/tree.png'
+        }); // if the tree overlaps the player or other tree redo iteration
+
+        var invalidPos = entities.some(function (entity) {
+          return newTree.isCollision(entity);
         });
-        this.inanimateEntities.push(newTree);
-      } // sort trees by y axis value so greater y-value objects are rendered on top
+        if (invalidPos) _i--;else _this.inanimateEntities.push(newTree);
+        i = _i;
+      };
 
-
-      this.inanimateEntities.sort(function (a, b) {
-        return a.pos[1] - b.pos[1];
-      });
+      for (var i = 0; i < numTrees; i++) {
+        _loop(i);
+      }
     }
   }]);
 
@@ -789,6 +923,27 @@ var Slime = /*#__PURE__*/function (_Creature) {
 }(_creature__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
+
+/***/ }),
+
+/***/ "./src/util.js":
+/*!*********************!*\
+  !*** ./src/util.js ***!
+  \*********************/
+/*! exports provided: randPos */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "randPos", function() { return randPos; });
+var randPos = function randPos(xRange, yRange, xOffset, yOffset) {
+  var randPos = [];
+  var randXPos = Math.random() * xRange + xOffset;
+  randPos.push(randXPos);
+  var randYPos = Math.random() * yRange + yOffset;
+  randPos.push(randYPos);
+  return randPos;
+};
 
 /***/ })
 

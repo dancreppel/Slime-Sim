@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const DIM_X = 1600;
   const DIM_Y = 900;
   const ctx = canvas.getContext('2d');
+  const movementSpeed = 10;
 
   canvas.width = DIM_X;
   canvas.height = DIM_Y;
@@ -12,7 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let game = new Game({
     DIM_X,
     DIM_Y,
-    ctx
+    ctx,
+    movementSpeed
   });
   
   game.start();

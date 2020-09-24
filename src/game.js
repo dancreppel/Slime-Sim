@@ -2,12 +2,14 @@ import Entity from './entity';
 import Creature from './creature'
 import Slime from './slime';
 import Map from './map';
+import * as Util from "./util";
 
 export default class Game {
   constructor (options) {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
+    this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
     this.moveDirX = 0;
@@ -23,13 +25,11 @@ export default class Game {
       dim: [30, 30],
       src: "assets/sprites/slime.png"
     });
-
-    // this.entities.push(this.player);
-    // this.creatures.push(this.player);
   }
 
   generateMap () {
     this.sandBox = new Map({
+      player: this.player,
       height: 6000,
       wall: "assets/sprites/rock.png",
       floor: "assets/sprites/grass.png",
@@ -43,26 +43,38 @@ export default class Game {
   }
 
   generateEnemies () {
-    // ! for testing
-    for(let i = 0; i < 20; i++) {
-      this.creatures.push(
-        new Creature({
-          pos: [500, 25 * i + 500],
-          dim: [20, 20],
-          src: "assets/sprites/mouse.png",
-        })
-      );
+    let creatures = {
+      mouse: {dim: 20, src: 'assets/sprites/mouse.png'}
     }
-    // let creatureDim = {
-    //   mouse: 20,
-    // }
 
-    // let numType = 20;
-    // let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
-    // let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
-    // for(let i = 0; i < numType; i++) {
+    const entities = this.entities.concat(this.player);
 
-    // }
+    let numType = 20;
+    for(const type in creatures) {
+      let dim = creatures[type].dim;
+      let src = creatures[type].src;
+      const xRange = this.sandBox.rightBound - this.sandBox.leftBound - dim;
+      const yRange = this.sandBox.bottomBound - this.sandBox.topBound - dim;
+      let i = 1;
+      while(i < numType) {
+        const xOffset = this.sandBox.leftBound;
+        const yOffset = this.sandBox.topBound;
+        const randPos = Util.randPos(xRange, yRange, xOffset, yOffset);
+        const newCreature = new Creature ({
+          pos: randPos,
+          dim: [dim, dim],
+          src: src
+        });
+        // const invalidPos = entities.some(entity => 
+        //   newCreature.isCollision(entity)
+        // );
+        // only push new creature to creatures array if it is in a valid pos
+        if (!newCreature.invalidPos(entities)) {
+          this.creatures.push(newCreature);
+          i++;
+        }
+      }
+    }
   }
 
   render (ctx) {
@@ -75,29 +87,30 @@ export default class Game {
 
   start () {
     this.setKeyBinds();
+    this.createPlayer();
     this.generateMap();
     this.generateEntities();
     this.generateEnemies();
-    this.createPlayer();
     // refresh 60 times per second
     setInterval(() => {
       this.render(this.ctx);
       // regular move
       this.move(false);
+      this.aiMovement();
       // if a collision occurs, reverse move
       if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
         this.move(true);
       }
       this.player.eat(this.creatures);
       if (this.player.dead) console.log('game over');
-    }, 16.667)
+    }, 17)
   }
 
   setKeyBinds () {
     // handle keydownfor arrow keys
     document.addEventListener('keydown', e => {
       e.preventDefault();
-      let speed = 10;
+      let speed = this.movementSpeed ;
       switch (e.key) {
         case 'ArrowUp':
           this.moveDirY = speed;
@@ -139,8 +152,8 @@ export default class Game {
         entity.move(-this.moveDirX, -this.moveDirY)
       );
 
-      this.creatures.forEach((entity) =>
-        entity.move(-this.moveDirX, -this.moveDirY)
+      this.creatures.forEach((creature) =>
+        creature.move(-this.moveDirX, -this.moveDirY)
       );
 
       this.sandBox.move(-this.moveDirX, -this.moveDirY);
@@ -149,17 +162,21 @@ export default class Game {
         entity.move(this.moveDirX, this.moveDirY)
       );
 
-      this.creatures.forEach((entity) =>
-        entity.move(this.moveDirX, this.moveDirY)
+      this.creatures.forEach((creature) =>
+        creature.move(this.moveDirX, this.moveDirY)
       );
 
       this.sandBox.move(this.moveDirX, this.moveDirY);
     }
-    // this.player.move();
-    // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
   }
 
   checkCollision () {
     return this.entities.some(entity => entity.isCollision(this.player));
+  }
+
+  aiMovement () {
+    this.creatures.forEach(creature => 
+      creature.movement(this.movementSpeed, this.entities, this.sandBox)
+    );
   }
 }

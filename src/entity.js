@@ -41,7 +41,7 @@ export default class Entity {
     return this.dim[0] < this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
   }
 
-  // ! for testing
+  // // ! for testing
   // drawHitbox() {
   //   const canvas = document.getElementById("canvas");
   //   const ctx = canvas.getContext("2d");
@@ -67,5 +67,9 @@ export default class Entity {
 
     if (distance < minDistance) return true;
     else return false;
+  }
+
+  invalidPos(entities) {
+    return entities.some(entity => this.isCollision(entity))
   }
 }
