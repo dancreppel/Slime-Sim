@@ -247,11 +247,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
 /* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
 /* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./map */ "./src/map.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./src/util.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -303,24 +305,48 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "generateEnemies",
     value: function generateEnemies() {
-      // ! for testing
-      // for(let i = 0; i < 20; i++) {
-      //   this.creatures.push(
-      //     new Creature({
-      //       pos: [500, 25 * i + 500],
-      //       dim: [20, 20],
-      //       src: "assets/sprites/mouse.png",
-      //     })
-      //   );
-      // }
-      var creatureDim = {
-        mouse: 20
-      };
-      var numType = 20;
-      var xRange = this.sandBox.rightBound - this.sandBox.leftBound;
-      var yRange = this.sandBox.bottomBound - this.sandBox.topBound;
+      var _this = this;
 
-      for (var i = 0; i < numType; i++) {}
+      var creatures = {
+        mouse: {
+          dim: 20,
+          src: 'assets/sprites/mouse.png'
+        }
+      };
+      var entities = this.entities.concat(this.player);
+      var numType = 20;
+
+      for (var type in creatures) {
+        var dim = creatures[type].dim;
+        var src = creatures[type].src;
+        var xRange = this.sandBox.rightBound - this.sandBox.leftBound - dim;
+        var yRange = this.sandBox.bottomBound - this.sandBox.topBound - dim;
+        var i = 1;
+
+        var _loop = function _loop() {
+          var xOffset = _this.sandBox.leftBound;
+          var yOffset = _this.sandBox.topBound;
+          var randPos = _util__WEBPACK_IMPORTED_MODULE_4__["randPos"](xRange, yRange, xOffset, yOffset);
+          var newCreature = new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
+            pos: randPos,
+            dim: [dim, dim],
+            src: src
+          });
+          var invalidPos = entities.some(function (entity) {
+            return newCreature.isCollision(entity);
+          }); // only push new creature to creatures array if it is in a valid pos
+
+          if (!invalidPos) {
+            _this.creatures.push(newCreature);
+
+            i++;
+          }
+        };
+
+        while (i < numType) {
+          _loop();
+        }
+      }
     }
   }, {
     key: "render",
@@ -338,7 +364,7 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "start",
     value: function start() {
-      var _this = this;
+      var _this2 = this;
 
       this.setKeyBinds();
       this.createPlayer();
@@ -347,46 +373,46 @@ var Game = /*#__PURE__*/function () {
       this.generateEnemies(); // refresh 60 times per second
 
       setInterval(function () {
-        _this.render(_this.ctx); // regular move
+        _this2.render(_this2.ctx); // regular move
 
 
-        _this.move(false); // if a collision occurs, reverse move
+        _this2.move(false); // if a collision occurs, reverse move
 
 
-        if (_this.checkCollision() || _this.sandBox.outOfBounds(_this.player)) {
-          _this.move(true);
+        if (_this2.checkCollision() || _this2.sandBox.outOfBounds(_this2.player)) {
+          _this2.move(true);
         }
 
-        _this.player.eat(_this.creatures);
+        _this2.player.eat(_this2.creatures);
 
-        if (_this.player.dead) console.log('game over');
-      }, 10);
+        if (_this2.player.dead) console.log('game over');
+      }, 17);
     }
   }, {
     key: "setKeyBinds",
     value: function setKeyBinds() {
-      var _this2 = this;
+      var _this3 = this;
 
       // handle keydownfor arrow keys
       document.addEventListener('keydown', function (e) {
         e.preventDefault();
-        var speed = 7;
+        var speed = 10;
 
         switch (e.key) {
           case 'ArrowUp':
-            _this2.moveDirY = speed;
+            _this3.moveDirY = speed;
             break;
 
           case 'ArrowDown':
-            _this2.moveDirY = -speed;
+            _this3.moveDirY = -speed;
             break;
 
           case 'ArrowLeft':
-            _this2.moveDirX = speed;
+            _this3.moveDirX = speed;
             break;
 
           case 'ArrowRight':
-            _this2.moveDirX = -speed;
+            _this3.moveDirX = -speed;
             break;
 
           default:
@@ -400,34 +426,34 @@ var Game = /*#__PURE__*/function () {
         var verKeys = ['ArrowUp', 'ArrowDown'];
 
         if (horKeys.includes(e.key)) {
-          _this2.moveDirX = 0;
+          _this3.moveDirX = 0;
         }
 
         if (verKeys.includes(e.key)) {
-          _this2.moveDirY = 0;
+          _this3.moveDirY = 0;
         }
       });
     }
   }, {
     key: "move",
     value: function move(reverse) {
-      var _this3 = this;
+      var _this4 = this;
 
       // * testing
       if (reverse) {
         this.entities.forEach(function (entity) {
-          return entity.move(-_this3.moveDirX, -_this3.moveDirY);
+          return entity.move(-_this4.moveDirX, -_this4.moveDirY);
         });
         this.creatures.forEach(function (entity) {
-          return entity.move(-_this3.moveDirX, -_this3.moveDirY);
+          return entity.move(-_this4.moveDirX, -_this4.moveDirY);
         });
         this.sandBox.move(-this.moveDirX, -this.moveDirY);
       } else {
         this.entities.forEach(function (entity) {
-          return entity.move(_this3.moveDirX, _this3.moveDirY);
+          return entity.move(_this4.moveDirX, _this4.moveDirY);
         });
         this.creatures.forEach(function (entity) {
-          return entity.move(_this3.moveDirX, _this3.moveDirY);
+          return entity.move(_this4.moveDirX, _this4.moveDirY);
         });
         this.sandBox.move(this.moveDirX, this.moveDirY);
       } // this.player.move();
@@ -437,10 +463,10 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "checkCollision",
     value: function checkCollision() {
-      var _this4 = this;
+      var _this5 = this;
 
       return this.entities.some(function (entity) {
-        return entity.isCollision(_this4.player);
+        return entity.isCollision(_this5.player);
       });
     }
   }]);
@@ -491,11 +517,13 @@ document.addEventListener("DOMContentLoaded", function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Map; });
 /* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./src/util.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -657,28 +685,35 @@ var Map = /*#__PURE__*/function () {
   }, {
     key: "createInanimateEntities",
     value: function createInanimateEntities() {
+      var _this = this;
+
       // randomly place n trees
-      var treeDim = 200;
-      var numTrees = 50;
+      var treeDim = 300;
+      var numTrees = 30;
       var xRange = this.rightBound - this.leftBound - treeDim;
       var yRange = this.bottomBound - this.topBound - treeDim;
 
-      for (var i = 0; i < numTrees; i++) {
-        var randXPos = Math.random() * xRange + this.leftBound;
-        var randYPos = Math.random() * yRange + this.topBound;
+      var _loop = function _loop(_i) {
+        var randPos = _util__WEBPACK_IMPORTED_MODULE_1__["randPos"](xRange, yRange, _this.leftBound, _this.topBound);
+
+        var entities = _this.inanimateEntities.concat(_this.player);
+
         var newTree = new _entity__WEBPACK_IMPORTED_MODULE_0__["default"]({
-          pos: [randXPos, randYPos],
+          pos: [randPos[0], randPos[1]],
           dim: [treeDim, treeDim],
           src: 'assets/sprites/tree.png'
-        }); // if the tree overlaps the player redo iteration
+        }); // if the tree overlaps the player or other tree redo iteration
 
-        if (newTree.isCollision(this.player)) i--;else this.inanimateEntities.push(newTree);
-      } // sort trees by y axis value so greater y-value objects are rendered on top
+        var invalidPos = entities.some(function (entity) {
+          return newTree.isCollision(entity);
+        });
+        if (invalidPos) _i--;else _this.inanimateEntities.push(newTree);
+        i = _i;
+      };
 
-
-      this.inanimateEntities.sort(function (a, b) {
-        return a.pos[1] - b.pos[1];
-      });
+      for (var i = 0; i < numTrees; i++) {
+        _loop(i);
+      }
     }
   }]);
 
@@ -794,6 +829,27 @@ var Slime = /*#__PURE__*/function (_Creature) {
 }(_creature__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
+
+/***/ }),
+
+/***/ "./src/util.js":
+/*!*********************!*\
+  !*** ./src/util.js ***!
+  \*********************/
+/*! exports provided: randPos */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "randPos", function() { return randPos; });
+var randPos = function randPos(xRange, yRange, xOffset, yOffset) {
+  var randPos = [];
+  var randXPos = Math.random() * xRange + xOffset;
+  randPos.push(randXPos);
+  var randYPos = Math.random() * yRange + yOffset;
+  randPos.push(randYPos);
+  return randPos;
+};
 
 /***/ })
 
