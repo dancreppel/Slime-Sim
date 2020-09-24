@@ -2,6 +2,7 @@ import Entity from './entity';
 import Creature from './creature'
 import Slime from './slime';
 import Map from './map';
+import * as Util from "./util";
 
 export default class Game {
   constructor (options) {
@@ -44,25 +45,37 @@ export default class Game {
   }
 
   generateEnemies () {
-    // ! for testing
-    // for(let i = 0; i < 20; i++) {
-    //   this.creatures.push(
-    //     new Creature({
-    //       pos: [500, 25 * i + 500],
-    //       dim: [20, 20],
-    //       src: "assets/sprites/mouse.png",
-    //     })
-    //   );
-    // }
-    let creatureDim = {
-      mouse: 20,
+    let creatures = {
+      mouse: {dim: 20, src: 'assets/sprites/mouse.png'}
     }
 
-    let numType = 20;
-    let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
-    let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
-    for(let i = 0; i < numType; i++) {
+    const entities = this.entities.concat(this.player);
 
+    let numType = 20;
+    for(const type in creatures) {
+      let dim = creatures[type].dim;
+      let src = creatures[type].src;
+      const xRange = this.sandBox.rightBound - this.sandBox.leftBound - dim;
+      const yRange = this.sandBox.bottomBound - this.sandBox.topBound - dim;
+      let i = 1;
+      while(i < numType) {
+        const xOffset = this.sandBox.leftBound;
+        const yOffset = this.sandBox.topBound;
+        const randPos = Util.randPos(xRange, yRange, xOffset, yOffset);
+        const newCreature = new Creature ({
+          pos: randPos,
+          dim: [dim, dim],
+          src: src
+        });
+        const invalidPos = entities.some(entity => 
+          newCreature.isCollision(entity)
+        );
+        // only push new creature to creatures array if it is in a valid pos
+        if (!invalidPos) {
+          this.creatures.push(newCreature);
+          i++;
+        }
+      }
     }
   }
 
@@ -91,14 +104,14 @@ export default class Game {
       }
       this.player.eat(this.creatures);
       if (this.player.dead) console.log('game over');
-    }, 10)
+    }, 17)
   }
 
   setKeyBinds () {
     // handle keydownfor arrow keys
     document.addEventListener('keydown', e => {
       e.preventDefault();
-      let speed = 7 ;
+      let speed = 10 ;
       switch (e.key) {
         case 'ArrowUp':
           this.moveDirY = speed;
