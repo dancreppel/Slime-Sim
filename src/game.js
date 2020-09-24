@@ -9,6 +9,7 @@ export default class Game {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
+    this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
     this.moveDirX = 0;
@@ -24,9 +25,6 @@ export default class Game {
       dim: [30, 30],
       src: "assets/sprites/slime.png"
     });
-
-    // this.entities.push(this.player);
-    // this.creatures.push(this.player);
   }
 
   generateMap () {
@@ -111,7 +109,7 @@ export default class Game {
     // handle keydownfor arrow keys
     document.addEventListener('keydown', e => {
       e.preventDefault();
-      let speed = 10 ;
+      let speed = this.movementSpeed ;
       switch (e.key) {
         case 'ArrowUp':
           this.moveDirY = speed;
@@ -153,8 +151,8 @@ export default class Game {
         entity.move(-this.moveDirX, -this.moveDirY)
       );
 
-      this.creatures.forEach((entity) =>
-        entity.move(-this.moveDirX, -this.moveDirY)
+      this.creatures.forEach((creature) =>
+        creature.move(-this.moveDirX, -this.moveDirY)
       );
 
       this.sandBox.move(-this.moveDirX, -this.moveDirY);
@@ -163,14 +161,12 @@ export default class Game {
         entity.move(this.moveDirX, this.moveDirY)
       );
 
-      this.creatures.forEach((entity) =>
-        entity.move(this.moveDirX, this.moveDirY)
+      this.creatures.forEach((creature) =>
+        creature.move(this.moveDirX, this.moveDirY)
       );
 
       this.sandBox.move(this.moveDirX, this.moveDirY);
     }
-    // this.player.move();
-    // this.creatures.forEach(creature => creature.move(this.moveDirX, this.moveDirY));
   }
 
   checkCollision () {
