@@ -287,6 +287,7 @@ var Game = /*#__PURE__*/function () {
     key: "generateMap",
     value: function generateMap() {
       this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_3__["default"]({
+        player: this.player,
         height: 6000,
         wall: "assets/sprites/rock.png",
         floor: "assets/sprites/grass.png",
@@ -303,21 +304,23 @@ var Game = /*#__PURE__*/function () {
     key: "generateEnemies",
     value: function generateEnemies() {
       // ! for testing
-      for (var i = 0; i < 20; i++) {
-        this.creatures.push(new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
-          pos: [500, 25 * i + 500],
-          dim: [20, 20],
-          src: "assets/sprites/mouse.png"
-        }));
-      } // let creatureDim = {
-      //   mouse: 20,
+      // for(let i = 0; i < 20; i++) {
+      //   this.creatures.push(
+      //     new Creature({
+      //       pos: [500, 25 * i + 500],
+      //       dim: [20, 20],
+      //       src: "assets/sprites/mouse.png",
+      //     })
+      //   );
       // }
-      // let numType = 20;
-      // let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
-      // let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
-      // for(let i = 0; i < numType; i++) {
-      // }
+      var creatureDim = {
+        mouse: 20
+      };
+      var numType = 20;
+      var xRange = this.sandBox.rightBound - this.sandBox.leftBound;
+      var yRange = this.sandBox.bottomBound - this.sandBox.topBound;
 
+      for (var i = 0; i < numType; i++) {}
     }
   }, {
     key: "render",
@@ -338,10 +341,10 @@ var Game = /*#__PURE__*/function () {
       var _this = this;
 
       this.setKeyBinds();
+      this.createPlayer();
       this.generateMap();
       this.generateEntities();
-      this.generateEnemies();
-      this.createPlayer(); // refresh 60 times per second
+      this.generateEnemies(); // refresh 60 times per second
 
       setInterval(function () {
         _this.render(_this.ctx); // regular move
@@ -357,7 +360,7 @@ var Game = /*#__PURE__*/function () {
         _this.player.eat(_this.creatures);
 
         if (_this.player.dead) console.log('game over');
-      }, 16.667);
+      }, 10);
     }
   }, {
     key: "setKeyBinds",
@@ -367,7 +370,7 @@ var Game = /*#__PURE__*/function () {
       // handle keydownfor arrow keys
       document.addEventListener('keydown', function (e) {
         e.preventDefault();
-        var speed = 10;
+        var speed = 7;
 
         switch (e.key) {
           case 'ArrowUp':
@@ -500,6 +503,7 @@ var Map = /*#__PURE__*/function () {
   function Map(options) {
     _classCallCheck(this, Map);
 
+    this.player = options.player;
     this.height = options.height; // pass in src for wall object and floor
 
     this.wall = options.wall;
@@ -666,8 +670,9 @@ var Map = /*#__PURE__*/function () {
           pos: [randXPos, randYPos],
           dim: [treeDim, treeDim],
           src: 'assets/sprites/tree.png'
-        });
-        this.inanimateEntities.push(newTree);
+        }); // if the tree overlaps the player redo iteration
+
+        if (newTree.isCollision(this.player)) i--;else this.inanimateEntities.push(newTree);
       } // sort trees by y axis value so greater y-value objects are rendered on top
 
 

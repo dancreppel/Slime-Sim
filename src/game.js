@@ -30,6 +30,7 @@ export default class Game {
 
   generateMap () {
     this.sandBox = new Map({
+      player: this.player,
       height: 6000,
       wall: "assets/sprites/rock.png",
       floor: "assets/sprites/grass.png",
@@ -44,25 +45,25 @@ export default class Game {
 
   generateEnemies () {
     // ! for testing
-    for(let i = 0; i < 20; i++) {
-      this.creatures.push(
-        new Creature({
-          pos: [500, 25 * i + 500],
-          dim: [20, 20],
-          src: "assets/sprites/mouse.png",
-        })
-      );
+    // for(let i = 0; i < 20; i++) {
+    //   this.creatures.push(
+    //     new Creature({
+    //       pos: [500, 25 * i + 500],
+    //       dim: [20, 20],
+    //       src: "assets/sprites/mouse.png",
+    //     })
+    //   );
+    // }
+    let creatureDim = {
+      mouse: 20,
     }
-    // let creatureDim = {
-    //   mouse: 20,
-    // }
 
-    // let numType = 20;
-    // let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
-    // let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
-    // for(let i = 0; i < numType; i++) {
+    let numType = 20;
+    let xRange = this.sandBox.rightBound - this.sandBox.leftBound;
+    let yRange = this.sandBox.bottomBound - this.sandBox.topBound;
+    for(let i = 0; i < numType; i++) {
 
-    // }
+    }
   }
 
   render (ctx) {
@@ -75,10 +76,10 @@ export default class Game {
 
   start () {
     this.setKeyBinds();
+    this.createPlayer();
     this.generateMap();
     this.generateEntities();
     this.generateEnemies();
-    this.createPlayer();
     // refresh 60 times per second
     setInterval(() => {
       this.render(this.ctx);
@@ -90,14 +91,14 @@ export default class Game {
       }
       this.player.eat(this.creatures);
       if (this.player.dead) console.log('game over');
-    }, 16.667)
+    }, 10)
   }
 
   setKeyBinds () {
     // handle keydownfor arrow keys
     document.addEventListener('keydown', e => {
       e.preventDefault();
-      let speed = 10;
+      let speed = 7 ;
       switch (e.key) {
         case 'ArrowUp':
           this.moveDirY = speed;
