@@ -2,8 +2,8 @@ import Entity from './entity';
 
 export default class Map {
   constructor (options) {
+    this.player = options.player;
     this.height = options.height;
-
     // pass in src for wall object and floor
     this.wall = options.wall;
     this.floor = options.floor;
@@ -158,6 +158,7 @@ export default class Map {
     let numTrees = 50;
     let xRange = this.rightBound - this.leftBound - treeDim;
     let yRange = this.bottomBound - this.topBound - treeDim;
+
     for(let i = 0; i < numTrees; i++) {
       let randXPos = Math.random() * xRange + this.leftBound; 
       let randYPos = Math.random() * yRange + this.topBound;
@@ -166,7 +167,11 @@ export default class Map {
         dim: [treeDim, treeDim],
         src: 'assets/sprites/tree.png'
       });
-      this.inanimateEntities.push(newTree);
+
+      // if the tree overlaps the player redo iteration
+      if (newTree.isCollision(this.player)) i--;
+      else this.inanimateEntities.push(newTree);
+      
     }
     // sort trees by y axis value so greater y-value objects are rendered on top
     this.inanimateEntities.sort((a, b) => a.pos[1] - b.pos[1]);
