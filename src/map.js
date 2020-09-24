@@ -155,25 +155,25 @@ export default class Map {
 
   createInanimateEntities () {
     // randomly place n trees
-    let treeDim = 200;
-    let numTrees = 50;
+    let treeDim = 300;
+    let numTrees = 30;
     let xRange = this.rightBound - this.leftBound - treeDim;
     let yRange = this.bottomBound - this.topBound - treeDim;
 
     for(let i = 0; i < numTrees; i++) {
       let randPos = Util.randPos(xRange, yRange, this.leftBound, this.topBound);
+      const entities = this.inanimateEntities.concat(this.player);
       let newTree = new Entity({
         pos: [randPos[0], randPos[1]],
         dim: [treeDim, treeDim],
         src: 'assets/sprites/tree.png'
       });
 
-      // if the tree overlaps the player redo iteration
-      if (newTree.isCollision(this.player)) i--;
+      // if the tree overlaps the player or other tree redo iteration
+      let invalidPos = entities.some(entity => newTree.isCollision(entity));
+      if (invalidPos) i--;
       else this.inanimateEntities.push(newTree);
       
     }
-    // sort trees by y axis value so greater y-value objects are rendered on top
-    this.inanimateEntities.sort((a, b) => a.pos[1] - b.pos[1]);
   }
 }
