@@ -1,4 +1,5 @@
 import Entity from './entity';
+import * as Util from './util';
 
 export default class Map {
   constructor (options) {
@@ -160,10 +161,9 @@ export default class Map {
     let yRange = this.bottomBound - this.topBound - treeDim;
 
     for(let i = 0; i < numTrees; i++) {
-      let randXPos = Math.random() * xRange + this.leftBound; 
-      let randYPos = Math.random() * yRange + this.topBound;
+      let randPos = Util.randPos(xRange, yRange, this.leftBound, this.topBound);
       let newTree = new Entity({
-        pos: [randXPos, randYPos],
+        pos: [randPos[0], randPos[1]],
         dim: [treeDim, treeDim],
         src: 'assets/sprites/tree.png'
       });
