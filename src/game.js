@@ -65,11 +65,11 @@ export default class Game {
           dim: [dim, dim],
           src: src
         });
-        const invalidPos = entities.some(entity => 
-          newCreature.isCollision(entity)
-        );
+        // const invalidPos = entities.some(entity => 
+        //   newCreature.isCollision(entity)
+        // );
         // only push new creature to creatures array if it is in a valid pos
-        if (!invalidPos) {
+        if (!newCreature.invalidPos(entities)) {
           this.creatures.push(newCreature);
           i++;
         }
@@ -96,6 +96,7 @@ export default class Game {
       this.render(this.ctx);
       // regular move
       this.move(false);
+      this.aiMovement();
       // if a collision occurs, reverse move
       if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
         this.move(true);
@@ -171,5 +172,11 @@ export default class Game {
 
   checkCollision () {
     return this.entities.some(entity => entity.isCollision(this.player));
+  }
+
+  aiMovement () {
+    this.creatures.forEach(creature => 
+      creature.movement(this.movementSpeed, this.entities, this.sandBox)
+    );
   }
 }
