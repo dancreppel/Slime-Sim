@@ -5,7 +5,8 @@ export default class Entity {
     // dim is an array with width and height [width, height]
     this.dim = options.dim;
     this.image = new Image();
-    this.image.src = options.src;
+    this.src = options.src;
+    this.image.src = this.src;
 
     // Instantiate hitbox
     this.hitboxCenter = this.hitboxCenter();
@@ -25,7 +26,7 @@ export default class Entity {
     // this.drawHitbox();
   }
 
-  move(dx, dy, ...entities) {
+  move(dx, dy) {
     this.pos[0] += dx;
     this.pos[1] += dy;
     this.hitboxCenter[0] += dx;
