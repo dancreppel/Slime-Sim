@@ -3,6 +3,8 @@ import Entity from './entity';
 export default class Creature extends Entity {
   constructor(options) {
     super(options);
+    // default to left facing sprite
+    this.image.src = this.src + "-left.png";
 
     this.numMoves = 0;
     this.movementDir = "";
@@ -49,10 +51,14 @@ export default class Creature extends Entity {
         case "left":
           this.pos[0] -= speed;
           this.hitboxCenter[0] -= speed;
+          // orient sprite left facing
+          this.image.src = this.src + "-left.png";
           break;
         case "right":
           this.pos[0] += speed;
           this.hitboxCenter[0] += speed;
+          // orient sprite right facing
+          this.image.src = this.src + "-right.png";
         default:
           break;
       }
