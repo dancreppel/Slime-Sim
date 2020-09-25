@@ -143,7 +143,9 @@ var Creature = /*#__PURE__*/function (_Entity) {
 
     _classCallCheck(this, Creature);
 
-    _this = _super.call(this, options);
+    _this = _super.call(this, options); // default to left facing sprite
+
+    _this.image.src = _this.src + "-left.png";
     _this.numMoves = 0;
     _this.movementDir = "";
     _this.moveDirs = ["up", "down", "left", "right"];
@@ -194,12 +196,16 @@ var Creature = /*#__PURE__*/function (_Entity) {
 
           case "left":
             this.pos[0] -= speed;
-            this.hitboxCenter[0] -= speed;
+            this.hitboxCenter[0] -= speed; // orient sprite left facing
+
+            this.image.src = this.src + "-left.png";
             break;
 
           case "right":
             this.pos[0] += speed;
-            this.hitboxCenter[0] += speed;
+            this.hitboxCenter[0] += speed; // orient sprite right facing
+
+            this.image.src = this.src + "-right.png";
 
           default:
             break;
@@ -245,7 +251,8 @@ var Entity = /*#__PURE__*/function () {
 
     this.dim = options.dim;
     this.image = new Image();
-    this.image.src = options.src; // Instantiate hitbox
+    this.src = options.src;
+    this.image.src = this.src; // Instantiate hitbox
 
     this.hitboxCenter = this.hitboxCenter();
     this.hitboxRadius = this.hitboxRadius();
@@ -398,7 +405,7 @@ var Game = /*#__PURE__*/function () {
       var creatures = {
         mouse: {
           dim: 20,
-          src: 'assets/sprites/mouse.png'
+          src: 'assets/sprites/mouse'
         }
       };
       var entities = this.entities.concat(this.player);
@@ -828,7 +835,7 @@ var Map = /*#__PURE__*/function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Slime; });
-/* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
+/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -853,8 +860,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-var Slime = /*#__PURE__*/function (_Creature) {
-  _inherits(Slime, _Creature);
+var Slime = /*#__PURE__*/function (_Entity) {
+  _inherits(Slime, _Entity);
 
   var _super = _createSuper(Slime);
 
@@ -920,7 +927,7 @@ var Slime = /*#__PURE__*/function (_Creature) {
   }]);
 
   return Slime;
-}(_creature__WEBPACK_IMPORTED_MODULE_0__["default"]);
+}(_entity__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 

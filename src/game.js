@@ -44,7 +44,7 @@ export default class Game {
 
   generateEnemies () {
     let creatures = {
-      mouse: {dim: 20, src: 'assets/sprites/mouse.png'}
+      mouse: {dim: 20, src: 'assets/sprites/mouse'}
     }
 
     const entities = this.entities.concat(this.player);

@@ -1,6 +1,6 @@
-import Creature from './creature';
+import Entity from './entity';
 
-export default class Slime extends Creature {
+export default class Slime extends Entity {
   constructor (options) {
     super(options);
   }
