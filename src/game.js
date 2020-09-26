@@ -19,11 +19,13 @@ export default class Game {
 
   createPlayer () {
     // center pos in the middle of the canvas object
-    let pos = [this.DIM_X / 2, this.DIM_Y / 2];
+    let modelDim = 200;
+    let pos = [this.DIM_X / 2 - modelDim / 2, this.DIM_Y / 2 - modelDim / 2];
     this.player = new Slime({
       pos,
-      dim: [30, 30],
-      src: "assets/sprites/slime.png"
+      dim: [modelDim, modelDim],
+      src: "assets/sprites/slime.png",
+      canvasCenter: pos
     });
   }
 
@@ -44,18 +46,22 @@ export default class Game {
 
   generateEnemies () {
     let creatures = {
-      mouse: {dim: 20, src: 'assets/sprites/mouse'}
+      mouse: {dim: 25, src: 'assets/sprites/mouse', num: 20},
+      lion: {dim: 50, src: 'assets/sprites/lion', num: 16},
+      bear: {dim: 100, src: 'assets/sprites/bear', num: 12},
+      dino: {dim: 200, src: 'assets/sprites/dino', num: 8},
+      golem: {dim:400, src: 'assets/sprites/golem', num: 1}
     }
 
     const entities = this.entities.concat(this.player);
 
-    let numType = 20;
     for(const type in creatures) {
+      let numType = creatures[type].num;
       let dim = creatures[type].dim;
       let src = creatures[type].src;
       const xRange = this.sandBox.rightBound - this.sandBox.leftBound - dim;
       const yRange = this.sandBox.bottomBound - this.sandBox.topBound - dim;
-      let i = 1;
+      let i = 0;
       while(i < numType) {
         const xOffset = this.sandBox.leftBound;
         const yOffset = this.sandBox.topBound;
@@ -83,6 +89,7 @@ export default class Game {
     this.entities.forEach(entity => entity.draw(ctx));
     this.creatures.forEach(creature => creature.draw(ctx));
     this.player.draw(ctx);
+    this.player.drawHitbox();
   }
 
   start () {

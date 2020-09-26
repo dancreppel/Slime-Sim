@@ -287,22 +287,17 @@ var Entity = /*#__PURE__*/function () {
     value: function hitboxRadius() {
       return this.dim[0] < this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
     } // // ! for testing
-    // drawHitbox() {
-    //   const canvas = document.getElementById("canvas");
-    //   const ctx = canvas.getContext("2d");
-    //   ctx.beginPath();
-    //   ctx.arc(
-    //     this.hitboxCenter[0],
-    //     this.hitboxCenter[1],
-    //     this.hitboxRadius,
-    //     0,
-    //     2 * Math.PI,
-    //     false
-    //   );
-    //   ctx.stroke();
-    //   return true;
-    // }
 
+  }, {
+    key: "drawHitbox",
+    value: function drawHitbox() {
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+      ctx.beginPath();
+      ctx.arc(this.hitboxCenter[0], this.hitboxCenter[1], this.hitboxRadius, 0, 2 * Math.PI, false);
+      ctx.stroke();
+      return true;
+    }
   }, {
     key: "isCollision",
     value: function isCollision(entity) {
@@ -375,11 +370,13 @@ var Game = /*#__PURE__*/function () {
     key: "createPlayer",
     value: function createPlayer() {
       // center pos in the middle of the canvas object
-      var pos = [this.DIM_X / 2, this.DIM_Y / 2];
+      var modelDim = 200;
+      var pos = [this.DIM_X / 2 - modelDim / 2, this.DIM_Y / 2 - modelDim / 2];
       this.player = new _slime__WEBPACK_IMPORTED_MODULE_2__["default"]({
         pos: pos,
-        dim: [30, 30],
-        src: "assets/sprites/slime.png"
+        dim: [modelDim, modelDim],
+        src: "assets/sprites/slime.png",
+        canvasCenter: pos
       });
     }
   }, {
@@ -404,19 +401,40 @@ var Game = /*#__PURE__*/function () {
     value: function generateEnemies() {
       var creatures = {
         mouse: {
-          dim: 20,
-          src: 'assets/sprites/mouse'
+          dim: 25,
+          src: 'assets/sprites/mouse',
+          num: 20
+        },
+        lion: {
+          dim: 50,
+          src: 'assets/sprites/lion',
+          num: 16
+        },
+        bear: {
+          dim: 100,
+          src: 'assets/sprites/bear',
+          num: 12
+        },
+        dino: {
+          dim: 200,
+          src: 'assets/sprites/dino',
+          num: 8
+        },
+        golem: {
+          dim: 400,
+          src: 'assets/sprites/golem',
+          num: 1
         }
       };
       var entities = this.entities.concat(this.player);
-      var numType = 20;
 
       for (var type in creatures) {
+        var numType = creatures[type].num;
         var dim = creatures[type].dim;
         var src = creatures[type].src;
         var xRange = this.sandBox.rightBound - this.sandBox.leftBound - dim;
         var yRange = this.sandBox.bottomBound - this.sandBox.topBound - dim;
-        var i = 1;
+        var i = 0;
 
         while (i < numType) {
           var xOffset = this.sandBox.leftBound;
@@ -450,6 +468,7 @@ var Game = /*#__PURE__*/function () {
         return creature.draw(ctx);
       });
       this.player.draw(ctx);
+      this.player.drawHitbox();
     }
   }, {
     key: "start",
@@ -866,9 +885,13 @@ var Slime = /*#__PURE__*/function (_Entity) {
   var _super = _createSuper(Slime);
 
   function Slime(options) {
+    var _this;
+
     _classCallCheck(this, Slime);
 
-    return _super.call(this, options);
+    _this = _super.call(this, options);
+    _this.canvasCenter = options.center;
+    return _this;
   }
 
   _createClass(Slime, [{
@@ -879,11 +902,11 @@ var Slime = /*#__PURE__*/function (_Entity) {
   }, {
     key: "eat",
     value: function eat(enemies) {
-      var _this = this;
+      var _this2 = this;
 
       enemies.forEach(function (enemy, i) {
-        if (_this.eatable(enemy)) {
-          _this.grow(enemy); // remove enemy
+        if (_this2.eatable(enemy)) {
+          _this2.grow(enemy); // remove enemy
 
 
           delete enemies[i];
@@ -909,7 +932,7 @@ var Slime = /*#__PURE__*/function (_Entity) {
   }, {
     key: "grow",
     value: function grow(enemy) {
-      var _this2 = this;
+      var _this3 = this;
 
       var enemyVolume = Math.pow(enemy.hitboxRadius, 3) * Math.PI * 4 / 3;
       var playerVolume = Math.pow(this.hitboxRadius, 3) * Math.PI * 4 / 3;
@@ -918,10 +941,10 @@ var Slime = /*#__PURE__*/function (_Entity) {
 
       this.hitboxRadius = newRadius; // apply new dimensions using diameter
 
-      this.dim = [newRadius * 2, newRadius * 2]; // adjust hitbox center
+      this.dim = [newRadius * 2, newRadius * 2]; // adjust center of model
 
-      this.hitboxCenter = this.pos.map(function (_, i) {
-        return _this2.pos[i] + _this2.dim[i] / 2;
+      this.pos = this.hitboxCenter.map(function (_, i) {
+        return _this3.hitboxCenter[i] - _this3.dim[i] / 2;
       });
     }
   }]);
