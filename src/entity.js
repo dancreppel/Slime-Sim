@@ -43,22 +43,22 @@ export default class Entity {
   }
 
   // // ! for testing
-  // drawHitbox() {
-  //   const canvas = document.getElementById("canvas");
-  //   const ctx = canvas.getContext("2d");
-  //   ctx.beginPath();
-  //   ctx.arc(
-  //     this.hitboxCenter[0],
-  //     this.hitboxCenter[1],
-  //     this.hitboxRadius,
-  //     0,
-  //     2 * Math.PI,
-  //     false
-  //   );
-  //   ctx.stroke();
+  drawHitbox() {
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(
+      this.hitboxCenter[0],
+      this.hitboxCenter[1],
+      this.hitboxRadius,
+      0,
+      2 * Math.PI,
+      false
+    );
+    ctx.stroke();
 
-  //   return true;
-  // }
+    return true;
+  }
 
   isCollision(entity) {
     let dx = this.hitboxCenter[0] - entity.hitboxCenter[0];

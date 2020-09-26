@@ -3,6 +3,7 @@ import Entity from './entity';
 export default class Slime extends Entity {
   constructor (options) {
     super(options);
+    this.canvasCenter = options.center;
   }
   
   move () {
@@ -44,7 +45,7 @@ export default class Slime extends Entity {
     this.hitboxRadius = newRadius;
     // apply new dimensions using diameter
     this.dim = [newRadius * 2, newRadius * 2];
-    // adjust hitbox center
-    this.hitboxCenter = this.pos.map((_, i) => this.pos[i] + this.dim[i] / 2);
+    // adjust center of model
+    this.pos = this.hitboxCenter.map((_, i) => this.hitboxCenter[i] - this.dim[i] / 2);
   }
 }
