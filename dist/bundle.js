@@ -359,6 +359,7 @@ var Game = /*#__PURE__*/function () {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
+    this.ambientAudio = new Audio(options.ambientSrc);
     this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
@@ -480,7 +481,10 @@ var Game = /*#__PURE__*/function () {
       this.createPlayer();
       this.generateMap();
       this.generateEntities();
-      this.generateEnemies(); // refresh 60 times per second
+      this.generateEnemies(); // play ambient noise in loop
+
+      this.ambientAudio.play();
+      this.ambientAudio.loop = true; // refresh 60 times per second
 
       setInterval(function () {
         _this.render(_this.ctx); // regular move
@@ -620,7 +624,8 @@ document.addEventListener("DOMContentLoaded", function () {
     DIM_X: DIM_X,
     DIM_Y: DIM_Y,
     ctx: ctx,
-    movementSpeed: movementSpeed
+    movementSpeed: movementSpeed,
+    ambientSrc: "assets/sounds/ambient.wav"
   });
   game.start();
 });
