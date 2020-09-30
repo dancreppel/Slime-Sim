@@ -376,7 +376,8 @@ var Game = /*#__PURE__*/function () {
         pos: pos,
         dim: [modelDim, modelDim],
         src: "assets/sprites/slime.png",
-        canvasCenter: pos
+        canvasCenter: pos,
+        audioSrc: "assets/sounds/slurp.wav"
       });
     }
   }, {
@@ -891,6 +892,7 @@ var Slime = /*#__PURE__*/function (_Entity) {
 
     _this = _super.call(this, options);
     _this.canvasCenter = options.center;
+    _this.eatAudio = new Audio(options.audioSrc);
     return _this;
   }
 
@@ -909,7 +911,9 @@ var Slime = /*#__PURE__*/function (_Entity) {
           _this2.grow(enemy); // remove enemy
 
 
-          delete enemies[i];
+          delete enemies[i]; // play eating noise
+
+          _this2.eatAudio.play();
         }
       });
     }
