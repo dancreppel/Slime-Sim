@@ -14,7 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     DIM_X,
     DIM_Y,
     ctx,
-    movementSpeed
+    movementSpeed,
+    ambientSrc: "assets/sounds/ambient.wav"
   });
   
   game.start();
