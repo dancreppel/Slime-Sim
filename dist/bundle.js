@@ -359,6 +359,7 @@ var Game = /*#__PURE__*/function () {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
+    this.ambientAudio = new Audio(options.ambientSrc);
     this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
@@ -376,7 +377,8 @@ var Game = /*#__PURE__*/function () {
         pos: pos,
         dim: [modelDim, modelDim],
         src: "assets/sprites/slime.png",
-        canvasCenter: pos
+        canvasCenter: pos,
+        audioSrc: "assets/sounds/slurp.wav"
       });
     }
   }, {
@@ -479,7 +481,10 @@ var Game = /*#__PURE__*/function () {
       this.createPlayer();
       this.generateMap();
       this.generateEntities();
-      this.generateEnemies(); // refresh 60 times per second
+      this.generateEnemies(); // play ambient noise in loop
+
+      this.ambientAudio.play();
+      this.ambientAudio.loop = true; // refresh 60 times per second
 
       setInterval(function () {
         _this.render(_this.ctx); // regular move
@@ -619,7 +624,8 @@ document.addEventListener("DOMContentLoaded", function () {
     DIM_X: DIM_X,
     DIM_Y: DIM_Y,
     ctx: ctx,
-    movementSpeed: movementSpeed
+    movementSpeed: movementSpeed,
+    ambientSrc: "assets/sounds/ambient.wav"
   });
   game.start();
 });
@@ -891,6 +897,7 @@ var Slime = /*#__PURE__*/function (_Entity) {
 
     _this = _super.call(this, options);
     _this.canvasCenter = options.center;
+    _this.eatAudio = new Audio(options.audioSrc);
     return _this;
   }
 
@@ -909,7 +916,9 @@ var Slime = /*#__PURE__*/function (_Entity) {
           _this2.grow(enemy); // remove enemy
 
 
-          delete enemies[i];
+          delete enemies[i]; // play eating noise
+
+          _this2.eatAudio.play();
         }
       });
     }

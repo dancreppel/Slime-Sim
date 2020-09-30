@@ -4,6 +4,7 @@ export default class Slime extends Entity {
   constructor (options) {
     super(options);
     this.canvasCenter = options.center;
+    this.eatAudio = new Audio(options.audioSrc);
   }
   
   move () {
@@ -17,6 +18,8 @@ export default class Slime extends Entity {
         this.grow(enemy);
         // remove enemy
         delete enemies[i];
+        // play eating noise
+        this.eatAudio.play();
       }
     });
   }
