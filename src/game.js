@@ -25,7 +25,8 @@ export default class Game {
       pos,
       dim: [modelDim, modelDim],
       src: "assets/sprites/slime.png",
-      canvasCenter: pos
+      canvasCenter: pos,
+      audioSrc: "assets/sounds/slurp.wav",
     });
   }
 
