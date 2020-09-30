@@ -9,6 +9,7 @@ export default class Game {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
     this.ctx = options.ctx;
+    this.ambientAudio = new Audio(options.ambientSrc);
     this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
@@ -99,6 +100,9 @@ export default class Game {
     this.generateMap();
     this.generateEntities();
     this.generateEnemies();
+    // play ambient noise in loop
+    this.ambientAudio.play();
+    this.ambientAudio.loop = true;
     // refresh 60 times per second
     setInterval(() => {
       this.render(this.ctx);
