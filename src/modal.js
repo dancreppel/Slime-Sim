@@ -1,8 +1,9 @@
 export default class Modal {
   constructor (options) {
-    // active determines if modal is visible
+    // active determines if modal element is visible
     // default to false
-    this.active = false;
+    this.activeBackground = false;
+    this.activeWindow = false;
 
     this.background = document.createElement("div");
     this.window = options.window;
