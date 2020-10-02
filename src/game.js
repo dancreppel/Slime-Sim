@@ -20,7 +20,7 @@ export default class Game {
 
   createPlayer () {
     // center pos in the middle of the canvas object
-    let modelDim = 200;
+    let modelDim = 30;
     let pos = [this.DIM_X / 2 - modelDim / 2, this.DIM_Y / 2 - modelDim / 2];
     this.player = new Slime({
       pos,
@@ -91,7 +91,6 @@ export default class Game {
     this.entities.forEach(entity => entity.draw(ctx));
     this.creatures.forEach(creature => creature.draw(ctx));
     this.player.draw(ctx);
-    this.player.drawHitbox();
   }
 
   start () {
