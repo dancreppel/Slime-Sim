@@ -17,6 +17,10 @@ export default class GameOver {
     this.replayButton = document.createElement("button");
     this.replayButton.className = 'replay-button';
     this.replayButton.value = 'Replay';
+    this.replayButton.addEventListener("click", e => {
+      e.preventDefault();
+      this.replay();
+    })
 
     // attach image and replay button to the game over view
     this.gameOverView.appendChild(this.image);
