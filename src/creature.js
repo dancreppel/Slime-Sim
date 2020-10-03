@@ -6,6 +6,9 @@ export default class Creature extends Entity {
     // default to left facing sprite
     this.image.src = this.src + "-left.png";
 
+    // set type of creature
+    this.type = options.type;
+
     this.numMoves = 0;
     this.movementDir = "";
     this.moveDirs = ["up", "down", "left", "right"];
