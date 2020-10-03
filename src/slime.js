@@ -5,6 +5,7 @@ export default class Slime extends Entity {
     super(options);
     this.canvasCenter = options.center;
     this.eatAudio = new Audio(options.audioSrc);
+    this.dead = false;
   }
   
   move () {
@@ -16,10 +17,16 @@ export default class Slime extends Entity {
     enemies.forEach((enemy, i) => {
       if (this.eatable(enemy)) {
         this.grow(enemy);
-        // remove enemy
-        delete enemies[i];
+
         // play eating noise
         this.eatAudio.play();
+
+        if (enemy.type === 'boss') {
+          enemy.dead = true;
+        } else {
+          // remove enemy
+          delete enemies[i];
+        }
       }
     });
   }
