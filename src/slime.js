@@ -5,6 +5,7 @@ export default class Slime extends Entity {
     super(options);
     this.canvasCenter = options.center;
     this.eatAudio = new Audio(options.audioSrc);
+    this.dead = false;
   }
   
   move () {
