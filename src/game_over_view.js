@@ -1,4 +1,4 @@
-export default class GameOver {
+export default class GameOverView {
   constructor (options) {
     // lose or win
     this.type = options.type;

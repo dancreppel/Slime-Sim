@@ -145,7 +145,9 @@ var Creature = /*#__PURE__*/function (_Entity) {
 
     _this = _super.call(this, options); // default to left facing sprite
 
-    _this.image.src = _this.src + "-left.png";
+    _this.image.src = _this.src + "-left.png"; // set type of creature
+
+    _this.type = options.type;
     _this.numMoves = 0;
     _this.movementDir = "";
     _this.moveDirs = ["up", "down", "left", "right"];
@@ -335,17 +337,15 @@ var Entity = /*#__PURE__*/function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Game; });
-/* harmony import */ var _entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entity */ "./src/entity.js");
-/* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
-/* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
-/* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./map */ "./src/map.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./src/util.js");
+/* harmony import */ var _creature__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creature */ "./src/creature.js");
+/* harmony import */ var _slime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./slime */ "./src/slime.js");
+/* harmony import */ var _map__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./map */ "./src/map.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util */ "./src/util.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
 
 
 
@@ -371,9 +371,9 @@ var Game = /*#__PURE__*/function () {
     key: "createPlayer",
     value: function createPlayer() {
       // center pos in the middle of the canvas object
-      var modelDim = 200;
+      var modelDim = 30;
       var pos = [this.DIM_X / 2 - modelDim / 2, this.DIM_Y / 2 - modelDim / 2];
-      this.player = new _slime__WEBPACK_IMPORTED_MODULE_2__["default"]({
+      this.player = new _slime__WEBPACK_IMPORTED_MODULE_1__["default"]({
         pos: pos,
         dim: [modelDim, modelDim],
         src: "assets/sprites/slime.png",
@@ -384,7 +384,7 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "generateMap",
     value: function generateMap() {
-      this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_3__["default"]({
+      this.sandBox = new _map__WEBPACK_IMPORTED_MODULE_2__["default"]({
         player: this.player,
         height: 6000,
         wall: "assets/sprites/rock.png",
@@ -404,27 +404,27 @@ var Game = /*#__PURE__*/function () {
       var creatures = {
         mouse: {
           dim: 25,
-          src: 'assets/sprites/mouse',
+          src: "assets/sprites/mouse",
           num: 20
         },
         lion: {
           dim: 50,
-          src: 'assets/sprites/lion',
+          src: "assets/sprites/lion",
           num: 16
         },
         bear: {
           dim: 100,
-          src: 'assets/sprites/bear',
+          src: "assets/sprites/bear",
           num: 12
         },
         dino: {
           dim: 200,
-          src: 'assets/sprites/dino',
+          src: "assets/sprites/dino",
           num: 8
         },
-        golem: {
+        boss: {
           dim: 400,
-          src: 'assets/sprites/golem',
+          src: "assets/sprites/golem",
           num: 1
         }
       };
@@ -441,17 +441,16 @@ var Game = /*#__PURE__*/function () {
         while (i < numType) {
           var xOffset = this.sandBox.leftBound;
           var yOffset = this.sandBox.topBound;
-          var randPos = _util__WEBPACK_IMPORTED_MODULE_4__["randPos"](xRange, yRange, xOffset, yOffset);
-          var newCreature = new _creature__WEBPACK_IMPORTED_MODULE_1__["default"]({
+          var randPos = _util__WEBPACK_IMPORTED_MODULE_3__["randPos"](xRange, yRange, xOffset, yOffset);
+          var newCreature = new _creature__WEBPACK_IMPORTED_MODULE_0__["default"]({
             pos: randPos,
             dim: [dim, dim],
-            src: src
-          }); // const invalidPos = entities.some(entity => 
-          //   newCreature.isCollision(entity)
-          // );
-          // only push new creature to creatures array if it is in a valid pos
+            src: src,
+            type: type
+          }); // only push new creature to creatures array if it is in a valid pos
 
           if (!newCreature.invalidPos(entities)) {
+            if (type === 'boss') this.boss = newCreature;
             this.creatures.push(newCreature);
             i++;
           }
@@ -459,9 +458,36 @@ var Game = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "start",
+    value: function start() {
+      this.setKeyBinds();
+      this.createPlayer();
+      this.generateMap();
+      this.generateEntities();
+      this.generateEnemies(); // play ambient noise in loop
+
+      this.ambientAudio.play();
+      this.ambientAudio.loop = true;
+    }
+  }, {
+    key: "prerender",
+    value: function prerender() {
+      // perform game logic before updating frame
+      // regular move
+      this.move(false); // if a collision occurs, reverse move
+
+      if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
+        this.move(true);
+      }
+
+      this.aiMovement();
+      this.player.eat(this.creatures);
+      if (this.player.dead) localStorage.setItem('state', 'lose');
+      if (this.boss.dead) localStorage.setItem('state', 'win');
+    }
+  }, {
     key: "render",
     value: function render(ctx) {
-      ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
       this.sandBox.draw(ctx);
       this.entities.forEach(function (entity) {
         return entity.draw(ctx);
@@ -470,65 +496,37 @@ var Game = /*#__PURE__*/function () {
         return creature.draw(ctx);
       });
       this.player.draw(ctx);
-      this.player.drawHitbox();
     }
   }, {
-    key: "start",
-    value: function start() {
-      var _this = this;
-
-      this.setKeyBinds();
-      this.createPlayer();
-      this.generateMap();
-      this.generateEntities();
-      this.generateEnemies(); // play ambient noise in loop
-
-      this.ambientAudio.play();
-      this.ambientAudio.loop = true; // refresh 60 times per second
-
-      setInterval(function () {
-        _this.render(_this.ctx); // regular move
-
-
-        _this.move(false);
-
-        _this.aiMovement(); // if a collision occurs, reverse move
-
-
-        if (_this.checkCollision() || _this.sandBox.outOfBounds(_this.player)) {
-          _this.move(true);
-        }
-
-        _this.player.eat(_this.creatures);
-
-        if (_this.player.dead) console.log('game over');
-      }, 17);
+    key: "clear",
+    value: function clear(ctx) {
+      ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
     }
   }, {
     key: "setKeyBinds",
     value: function setKeyBinds() {
-      var _this2 = this;
+      var _this = this;
 
       // handle keydownfor arrow keys
-      document.addEventListener('keydown', function (e) {
+      document.addEventListener("keydown", function (e) {
         e.preventDefault();
-        var speed = _this2.movementSpeed;
+        var speed = _this.movementSpeed * 2;
 
         switch (e.key) {
-          case 'ArrowUp':
-            _this2.moveDirY = speed;
+          case "ArrowUp":
+            _this.moveDirY = speed;
             break;
 
-          case 'ArrowDown':
-            _this2.moveDirY = -speed;
+          case "ArrowDown":
+            _this.moveDirY = -speed;
             break;
 
-          case 'ArrowLeft':
-            _this2.moveDirX = speed;
+          case "ArrowLeft":
+            _this.moveDirX = speed;
             break;
 
-          case 'ArrowRight':
-            _this2.moveDirX = -speed;
+          case "ArrowRight":
+            _this.moveDirX = -speed;
             break;
 
           default:
@@ -536,40 +534,39 @@ var Game = /*#__PURE__*/function () {
         }
       }); // handle keyup for arrow keys
 
-      document.addEventListener('keyup', function (e) {
+      document.addEventListener("keyup", function (e) {
         e.preventDefault();
-        var horKeys = ['ArrowLeft', 'ArrowRight'];
-        var verKeys = ['ArrowUp', 'ArrowDown'];
+        var horKeys = ["ArrowLeft", "ArrowRight"];
+        var verKeys = ["ArrowUp", "ArrowDown"];
 
         if (horKeys.includes(e.key)) {
-          _this2.moveDirX = 0;
+          _this.moveDirX = 0;
         }
 
         if (verKeys.includes(e.key)) {
-          _this2.moveDirY = 0;
+          _this.moveDirY = 0;
         }
       });
     }
   }, {
     key: "move",
     value: function move(reverse) {
-      var _this3 = this;
+      var _this2 = this;
 
-      // * testing
       if (reverse) {
         this.entities.forEach(function (entity) {
-          return entity.move(-_this3.moveDirX, -_this3.moveDirY);
+          return entity.move(-_this2.moveDirX, -_this2.moveDirY);
         });
         this.creatures.forEach(function (creature) {
-          return creature.move(-_this3.moveDirX, -_this3.moveDirY);
+          return creature.move(-_this2.moveDirX, -_this2.moveDirY);
         });
         this.sandBox.move(-this.moveDirX, -this.moveDirY);
       } else {
         this.entities.forEach(function (entity) {
-          return entity.move(_this3.moveDirX, _this3.moveDirY);
+          return entity.move(_this2.moveDirX, _this2.moveDirY);
         });
         this.creatures.forEach(function (creature) {
-          return creature.move(_this3.moveDirX, _this3.moveDirY);
+          return creature.move(_this2.moveDirX, _this2.moveDirY);
         });
         this.sandBox.move(this.moveDirX, this.moveDirY);
       }
@@ -577,24 +574,147 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "checkCollision",
     value: function checkCollision() {
-      var _this4 = this;
+      var _this3 = this;
 
       return this.entities.some(function (entity) {
-        return entity.isCollision(_this4.player);
+        return entity.isCollision(_this3.player);
       });
     }
   }, {
     key: "aiMovement",
     value: function aiMovement() {
-      var _this5 = this;
+      var _this4 = this;
 
       this.creatures.forEach(function (creature) {
-        return creature.movement(_this5.movementSpeed, _this5.entities, _this5.sandBox);
+        return creature.movement(_this4.movementSpeed, _this4.entities, _this4.sandBox);
       });
     }
   }]);
 
   return Game;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/game_over_view.js":
+/*!*******************************!*\
+  !*** ./src/game_over_view.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GameOverView; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var GameOverView = /*#__PURE__*/function () {
+  function GameOverView(options) {
+    var _this = this;
+
+    _classCallCheck(this, GameOverView);
+
+    // lose or win
+    this.type = options.type; // div that houses the game over image and replay button 
+
+    this.gameOverView = document.createElement("div");
+    this.gameOverView.className = "game-over-view"; // instantiate game over image
+
+    this.image = new Image();
+    if (type === 'win') this.image.src = "assets/sprites/gameover.jpg";else this.image.src = "assets/sprites/youwin.jpg";
+    this.image.className = "game-over-image"; // instantiate replay button
+
+    this.replayButton = document.createElement("button");
+    this.replayButton.className = 'replay-button';
+    this.replayButton.value = 'Replay';
+    this.replayButton.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      _this.replay();
+    }); // attach image and replay button to the game over view
+
+    this.gameOverView.appendChild(this.image);
+    this.gameOverView.appendChild(this.replayButton);
+  }
+
+  _createClass(GameOverView, [{
+    key: "replay",
+    value: function replay() {
+      localStorage.setItem('state', 'main');
+    }
+  }]);
+
+  return GameOverView;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/game_view.js":
+/*!**************************!*\
+  !*** ./src/game_view.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GameView; });
+/* harmony import */ var _game_over_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game_over_view */ "./src/game_over_view.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var GameView = /*#__PURE__*/function () {
+  function GameView(options) {
+    _classCallCheck(this, GameView);
+
+    this.game = options.game; // default state starts with main menu
+    // ! testing
+
+    localStorage.setItem('state', 'play'); // this.LoseView = new GameOverView({
+    //   type: 'lose'
+    // });
+    // this.WinView = new GameOverView({
+    //   type: 'win'
+    // });
+
+    this.checkStatus();
+  }
+
+  _createClass(GameView, [{
+    key: "checkStatus",
+    value: function checkStatus() {
+      var _this = this;
+
+      // check 60 times a second
+      setInterval(function () {
+        if (localStorage.state === 'play') _this.play();
+        if (localStorage.state === 'lose') alert('you lose!');
+        if (localStorage.state === 'win') alert('you win!');
+      }, 17);
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      this.game.clear(this.game.ctx);
+      this.game.prerender();
+      this.game.render(this.game.ctx);
+    }
+  }]);
+
+  return GameView;
 }();
 
 
@@ -611,6 +731,8 @@ var Game = /*#__PURE__*/function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game */ "./src/game.js");
+/* harmony import */ var _game_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./game_view */ "./src/game_view.js");
+
 
 document.addEventListener("DOMContentLoaded", function () {
   var canvas = document.getElementById('canvas');
@@ -628,6 +750,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ambientSrc: "assets/sounds/ambient.wav"
   });
   game.start();
+  var gameView = new _game_view__WEBPACK_IMPORTED_MODULE_1__["default"]({
+    game: game
+  });
 });
 
 /***/ }),
@@ -898,6 +1023,7 @@ var Slime = /*#__PURE__*/function (_Entity) {
     _this = _super.call(this, options);
     _this.canvasCenter = options.center;
     _this.eatAudio = new Audio(options.audioSrc);
+    _this.dead = false;
     return _this;
   }
 
@@ -913,12 +1039,17 @@ var Slime = /*#__PURE__*/function (_Entity) {
 
       enemies.forEach(function (enemy, i) {
         if (_this2.eatable(enemy)) {
-          _this2.grow(enemy); // remove enemy
+          _this2.grow(enemy); // play eating noise
 
-
-          delete enemies[i]; // play eating noise
 
           _this2.eatAudio.play();
+
+          if (enemy.type === 'boss') {
+            enemy.dead = true;
+          } else {
+            // remove enemy
+            delete enemies[i];
+          }
         }
       });
     }
