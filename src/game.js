@@ -1,4 +1,3 @@
-import Entity from './entity';
 import Creature from './creature'
 import Slime from './slime';
 import Map from './map';
@@ -15,7 +14,6 @@ export default class Game {
     this.creatures = [];
     this.moveDirX = 0;
     this.moveDirY = 0;
-
   }
 
   createPlayer () {
@@ -48,49 +46,42 @@ export default class Game {
 
   generateEnemies () {
     let creatures = {
-      mouse: {dim: 25, src: 'assets/sprites/mouse', num: 20},
-      lion: {dim: 50, src: 'assets/sprites/lion', num: 16},
-      bear: {dim: 100, src: 'assets/sprites/bear', num: 12},
-      dino: {dim: 200, src: 'assets/sprites/dino', num: 8},
-      golem: {dim:400, src: 'assets/sprites/golem', num: 1}
-    }
+      mouse: { dim: 25, src: "assets/sprites/mouse", num: 20 },
+      lion: { dim: 50, src: "assets/sprites/lion", num: 16 },
+      bear: { dim: 100, src: "assets/sprites/bear", num: 12 },
+      dino: { dim: 200, src: "assets/sprites/dino", num: 8 },
+      boss: { dim: 400, src: "assets/sprites/golem", num: 1 },
+    };
 
     const entities = this.entities.concat(this.player);
 
-    for(const type in creatures) {
+    for (const type in creatures) {
       let numType = creatures[type].num;
       let dim = creatures[type].dim;
       let src = creatures[type].src;
       const xRange = this.sandBox.rightBound - this.sandBox.leftBound - dim;
       const yRange = this.sandBox.bottomBound - this.sandBox.topBound - dim;
       let i = 0;
-      while(i < numType) {
+
+      while (i < numType) {
         const xOffset = this.sandBox.leftBound;
         const yOffset = this.sandBox.topBound;
         const randPos = Util.randPos(xRange, yRange, xOffset, yOffset);
-        const newCreature = new Creature ({
+        const newCreature = new Creature({
           pos: randPos,
           dim: [dim, dim],
-          src: src
+          src: src,
+          type
         });
-        // const invalidPos = entities.some(entity => 
-        //   newCreature.isCollision(entity)
-        // );
+        
         // only push new creature to creatures array if it is in a valid pos
         if (!newCreature.invalidPos(entities)) {
+          if (type === 'boss') this.boss = newCreature;
           this.creatures.push(newCreature);
           i++;
         }
       }
     }
-  }
-
-  render (ctx) {
-    ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
-    this.sandBox.draw(ctx);
-    this.entities.forEach(entity => entity.draw(ctx));
-    this.creatures.forEach(creature => creature.draw(ctx));
-    this.player.draw(ctx);
   }
 
   start () {
@@ -102,37 +93,50 @@ export default class Game {
     // play ambient noise in loop
     this.ambientAudio.play();
     this.ambientAudio.loop = true;
-    // refresh 60 times per second
-    setInterval(() => {
-      this.render(this.ctx);
-      // regular move
-      this.move(false);
-      this.aiMovement();
-      // if a collision occurs, reverse move
-      if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
-        this.move(true);
-      }
-      this.player.eat(this.creatures);
-      if (this.player.dead) console.log('game over');
-    }, 17)
+  }
+
+  prerender () {
+    // perform game logic before updating frame
+
+    // regular move
+    this.move(false);
+    // if a collision occurs, reverse move
+    if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
+      this.move(true);
+    }
+    this.aiMovement();
+    this.player.eat(this.creatures);
+    if (this.player.dead) localStorage.setItem('state', 'lose');
+    if (this.boss.dead) localStorage.setItem('state', 'win');
+  }
+
+  render (ctx) {
+    this.sandBox.draw(ctx);
+    this.entities.forEach((entity) => entity.draw(ctx));
+    this.creatures.forEach((creature) => creature.draw(ctx));
+    this.player.draw(ctx);
+  }
+
+  clear (ctx) {
+    ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
   }
 
   setKeyBinds () {
     // handle keydownfor arrow keys
-    document.addEventListener('keydown', e => {
+    document.addEventListener("keydown", (e) => {
       e.preventDefault();
-      let speed = this.movementSpeed ;
+      let speed = this.movementSpeed * 2;
       switch (e.key) {
-        case 'ArrowUp':
+        case "ArrowUp":
           this.moveDirY = speed;
           break;
-        case 'ArrowDown':
+        case "ArrowDown":
           this.moveDirY = -speed;
           break;
-        case 'ArrowLeft':
+        case "ArrowLeft":
           this.moveDirX = speed;
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           this.moveDirX = -speed;
           break;
         default:
@@ -141,10 +145,10 @@ export default class Game {
     });
 
     // handle keyup for arrow keys
-    document.addEventListener('keyup', e => {
+    document.addEventListener("keyup", (e) => {
       e.preventDefault();
-      const horKeys = ['ArrowLeft', 'ArrowRight'];
-      const verKeys = ['ArrowUp', 'ArrowDown']; 
+      const horKeys = ["ArrowLeft", "ArrowRight"];
+      const verKeys = ["ArrowUp", "ArrowDown"];
 
       if (horKeys.includes(e.key)) {
         this.moveDirX = 0;
@@ -153,11 +157,10 @@ export default class Game {
       if (verKeys.includes(e.key)) {
         this.moveDirY = 0;
       }
-    })
+    });
   }
 
   move (reverse) {
-    // * testing
     if (reverse) {
       this.entities.forEach((entity) =>
         entity.move(-this.moveDirX, -this.moveDirY)
@@ -182,11 +185,11 @@ export default class Game {
   }
 
   checkCollision () {
-    return this.entities.some(entity => entity.isCollision(this.player));
+    return this.entities.some((entity) => entity.isCollision(this.player));
   }
 
   aiMovement () {
-    this.creatures.forEach(creature => 
+    this.creatures.forEach((creature) =>
       creature.movement(this.movementSpeed, this.entities, this.sandBox)
     );
   }
