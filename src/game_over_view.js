@@ -2,6 +2,9 @@ export default class GameOverView {
   constructor (options) {
     // lose or win
     this.type = options.type;
+
+    // view is defaulted to no mounted
+    this.mounted = false;
     
     // div that houses the game over image and replay button 
     this.gameOverView = document.createElement("div");
@@ -9,7 +12,7 @@ export default class GameOverView {
     
     // instantiate game over image
     this.image = new Image();
-    if (type === 'win') this.image.src = "assets/sprites/gameover.jpg";
+    if (this.type === 'win') this.image.src = "assets/sprites/gameover.jpg";
     else this.image.src = "assets/sprites/youwin.jpg"
     this.image.className = "game-over-image";
 
