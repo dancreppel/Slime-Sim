@@ -8,23 +8,38 @@ export default class GameView {
     // ! testing
     localStorage.setItem('state', 'play');
 
-    // this.LoseView = new GameOverView({
-    //   type: 'lose'
-    // });
+    this.canvas = document.getElementById('canvas');
+    this.canvas.mounted = true;
 
-    // this.WinView = new GameOverView({
-    //   type: 'win'
-    // });
+    this.loseView = new GameOverView({
+      type: 'lose'
+    });
 
-    this.checkStatus();
+    this.winView = new GameOverView({
+      type: 'win'
+    });
+
+    this.checkState();
   }
 
-  checkStatus () {
+  checkState () {
     // check 60 times a second
     setInterval(() => {
-      if (localStorage.state === 'play') this.play();
-      if (localStorage.state === 'lose') alert('you lose!');
-      if (localStorage.state === 'win') alert('you win!');
+      switch (localStorage.state) {
+        case 'play':
+          this.play();
+          break;
+        case 'win':
+          this.mountGameOverView('win');
+          this.unmountCanvas();
+          break;
+        case 'lose':
+          this.mountGameOverView('lose');
+          this.unmountCanvas();
+          break;
+        default:
+          break;
+      }
     }, 17);
   }
 
@@ -32,5 +47,21 @@ export default class GameView {
     this.game.clear(this.game.ctx);
     this.game.prerender();
     this.game.render(this.game.ctx);
+  }
+
+  unmountCanvas () {
+    // only remove canvas element if it is mounted
+    if (this.canvas.mounted) {
+      document.body.removeChild(this.canvas);
+      this.canvas.mounted = false;
+    }
+  }
+
+  mountGameOverView (type) {
+    if (type === 'win' && !this.mounted) {
+      document.body.appendChild(this.winView.gameOverView);
+    } else if (type === 'lose' && !this.mounted) {
+      document.body.appendChild(this.loseView.gameOverView);
+    }
   }
 }
