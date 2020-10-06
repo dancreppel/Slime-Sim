@@ -30,12 +30,12 @@ export default class GameView {
           this.play();
           break;
         case 'win':
-          this.mountGameOverView('win');
           this.unmountCanvas();
+          this.mountGameOverView('win');
           break;
         case 'lose':
-          this.mountGameOverView('lose');
           this.unmountCanvas();
+          this.mountGameOverView('lose');
           break;
         default:
           break;
@@ -49,6 +49,12 @@ export default class GameView {
     this.game.render(this.game.ctx);
   }
 
+  // mountCanvas () {
+  //   if (!this.canvas.mounted) {
+  //     document.body.appendChild
+  //   }
+  // }
+
   unmountCanvas () {
     // only remove canvas element if it is mounted
     if (this.canvas.mounted) {
@@ -58,10 +64,12 @@ export default class GameView {
   }
 
   mountGameOverView (type) {
-    if (type === 'win' && !this.mounted) {
+    if (type === 'win' && !this.winView.mounted) {
       document.body.appendChild(this.winView.gameOverView);
-    } else if (type === 'lose' && !this.mounted) {
+      this.winView.mounted = true;
+    } else if (type === 'lose' && !this.loseView.mounted) {
       document.body.appendChild(this.loseView.gameOverView);
+      this.loseView.mounted = true;
     }
   }
 }
