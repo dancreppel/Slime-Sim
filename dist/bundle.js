@@ -621,13 +621,15 @@ var GameOverView = /*#__PURE__*/function () {
     _classCallCheck(this, GameOverView);
 
     // lose or win
-    this.type = options.type; // div that houses the game over image and replay button 
+    this.type = options.type; // view is defaulted to no mounted
+
+    this.mounted = false; // div that houses the game over image and replay button 
 
     this.gameOverView = document.createElement("div");
     this.gameOverView.className = "game-over-view"; // instantiate game over image
 
     this.image = new Image();
-    if (type === 'win') this.image.src = "assets/sprites/gameover.jpg";else this.image.src = "assets/sprites/youwin.jpg";
+    if (this.type === 'lose') this.image.src = "assets/sprites/gameover.jpg";else this.image.src = "assets/sprites/youwin.jpg";
     this.image.className = "game-over-image"; // instantiate replay button
 
     this.replayButton = document.createElement("button");
@@ -683,26 +685,48 @@ var GameView = /*#__PURE__*/function () {
     this.game = options.game; // default state starts with main menu
     // ! testing
 
-    localStorage.setItem('state', 'play'); // this.LoseView = new GameOverView({
-    //   type: 'lose'
-    // });
-    // this.WinView = new GameOverView({
-    //   type: 'win'
-    // });
-
-    this.checkStatus();
+    localStorage.setItem('state', 'play');
+    this.canvas = document.getElementById('canvas');
+    this.canvas.mounted = true;
+    this.loseView = new _game_over_view__WEBPACK_IMPORTED_MODULE_0__["default"]({
+      type: 'lose'
+    });
+    this.winView = new _game_over_view__WEBPACK_IMPORTED_MODULE_0__["default"]({
+      type: 'win'
+    });
+    this.checkState();
   }
 
   _createClass(GameView, [{
-    key: "checkStatus",
-    value: function checkStatus() {
+    key: "checkState",
+    value: function checkState() {
       var _this = this;
 
       // check 60 times a second
       setInterval(function () {
-        if (localStorage.state === 'play') _this.play();
-        if (localStorage.state === 'lose') alert('you lose!');
-        if (localStorage.state === 'win') alert('you win!');
+        switch (localStorage.state) {
+          case 'play':
+            _this.play();
+
+            break;
+
+          case 'win':
+            _this.unmountCanvas();
+
+            _this.mountGameOverView('win');
+
+            break;
+
+          case 'lose':
+            _this.unmountCanvas();
+
+            _this.mountGameOverView('lose');
+
+            break;
+
+          default:
+            break;
+        }
       }, 17);
     }
   }, {
@@ -711,6 +735,31 @@ var GameView = /*#__PURE__*/function () {
       this.game.clear(this.game.ctx);
       this.game.prerender();
       this.game.render(this.game.ctx);
+    } // mountCanvas () {
+    //   if (!this.canvas.mounted) {
+    //     document.body.appendChild
+    //   }
+    // }
+
+  }, {
+    key: "unmountCanvas",
+    value: function unmountCanvas() {
+      // only remove canvas element if it is mounted
+      if (this.canvas.mounted) {
+        document.body.removeChild(this.canvas);
+        this.canvas.mounted = false;
+      }
+    }
+  }, {
+    key: "mountGameOverView",
+    value: function mountGameOverView(type) {
+      if (type === 'win' && !this.winView.mounted) {
+        document.body.appendChild(this.winView.gameOverView);
+        this.winView.mounted = true;
+      } else if (type === 'lose' && !this.loseView.mounted) {
+        document.body.appendChild(this.loseView.gameOverView);
+        this.loseView.mounted = true;
+      }
     }
   }]);
 
@@ -1059,7 +1108,8 @@ var Slime = /*#__PURE__*/function (_Entity) {
       var dx = this.hitboxCenter[0] - enemy.hitboxCenter[0];
       var dy = this.hitboxCenter[1] - enemy.hitboxCenter[1];
       var distance = Math.sqrt(dx * dx + dy * dy);
-      var minDistance = this.hitboxRadius;
+      var minDistance;
+      minDistance = this.hitboxRadius > enemy.hitboxRadius ? this.hitboxRadius : enemy.hitboxRadius;
 
       if (distance < minDistance && this.hitboxRadius < enemy.hitboxRadius) {
         this.dead = true;
