@@ -35,7 +35,11 @@ export default class Slime extends Entity {
     let dx = this.hitboxCenter[0] - enemy.hitboxCenter[0];
     let dy = this.hitboxCenter[1] - enemy.hitboxCenter[1];
     let distance = Math.sqrt(dx * dx + dy * dy);
-    let minDistance = this.hitboxRadius;
+    
+    let minDistance;
+    minDistance = this.hitboxRadius > enemy.hitboxRadius
+      ? this.hitboxRadius 
+      : enemy.hitboxRadius;
 
     if (distance < minDistance && this.hitboxRadius < enemy.hitboxRadius) {
       this.dead = true;
