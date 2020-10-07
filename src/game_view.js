@@ -8,24 +8,39 @@ export default class GameView {
     // ! testing
     localStorage.setItem('state', 'play');
 
-    // this.LoseView = new GameOverView({
-    //   type: 'lose'
-    // });
+    this.canvas = document.getElementById('canvas');
+    this.canvas.mounted = true;
 
-    // this.WinView = new GameOverView({
-    //   type: 'win'
-    // });
+    this.loseView = new GameOverView({
+      type: 'lose'
+    });
 
-    this.checkStatus();
+    this.winView = new GameOverView({
+      type: 'win'
+    });
+
+    this.checkState();
   }
 
-  checkStatus () {
+  checkState () {
     // check 60 times a second
     // webpack
     setInterval(() => {
-      if (localStorage.state === 'play') this.play();
-      if (localStorage.state === 'lose') alert('you lose!');
-      if (localStorage.state === 'win') alert('you win!');
+      switch (localStorage.state) {
+        case 'play':
+          this.play();
+          break;
+        case 'win':
+          this.unmountCanvas();
+          this.mountGameOverView('win');
+          break;
+        case 'lose':
+          this.unmountCanvas();
+          this.mountGameOverView('lose');
+          break;
+        default:
+          break;
+      }
     }, 17);
   }
 
@@ -33,5 +48,29 @@ export default class GameView {
     this.game.clear(this.game.ctx);
     this.game.prerender();
     this.game.render(this.game.ctx);
+  }
+
+  // mountCanvas () {
+  //   if (!this.canvas.mounted) {
+  //     document.body.appendChild
+  //   }
+  // }
+
+  unmountCanvas () {
+    // only remove canvas element if it is mounted
+    if (this.canvas.mounted) {
+      document.body.removeChild(this.canvas);
+      this.canvas.mounted = false;
+    }
+  }
+
+  mountGameOverView (type) {
+    if (type === 'win' && !this.winView.mounted) {
+      document.body.appendChild(this.winView.gameOverView);
+      this.winView.mounted = true;
+    } else if (type === 'lose' && !this.loseView.mounted) {
+      document.body.appendChild(this.loseView.gameOverView);
+      this.loseView.mounted = true;
+    }
   }
 }
