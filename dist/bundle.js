@@ -464,7 +464,9 @@ var Game = /*#__PURE__*/function () {
       this.createPlayer();
       this.generateMap();
       this.generateEntities();
-      this.generateEnemies(); // play ambient noise in loop
+      this.generateEnemies(); // sound is on by default
+
+      localStorage.setItem('sound', 'on'); // play ambient noise in loop
 
       this.ambientAudio.play();
       this.ambientAudio.loop = true;
