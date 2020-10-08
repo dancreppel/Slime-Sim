@@ -24,5 +24,18 @@ export default class HUD {
       if (localStorage.sound === 'on') localStorage.setItem('sound', 'off');
       else localStorage.setItem('sound', 'on');
     });
+
+    this.hudButtons = [];
+    this.hudButtons.push(this.helpButton);
+    this.hudButtons.push(this.pauseButton);
+    this.hudButtons.push(this.soundButton);
+  }
+
+  mountHudButtons () {
+    this.hudButtons.forEach(button => document.body.appendChild(button));
+  }
+
+  unmountHudButtons () {
+    this.hudButtons.forEach(button => document.body.removeChild(button));
   }
 }
