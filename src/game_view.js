@@ -1,4 +1,5 @@
 import GameOverView from './game_over_view';
+import HUD from './hud';
 
 export default class GameView {
   constructor (options) {
@@ -10,6 +11,8 @@ export default class GameView {
 
     this.canvas = document.getElementById('canvas');
     this.canvas.mounted = true;
+
+    this.hud = new HUD();
 
     this.loseView = new GameOverView({
       type: 'lose'
@@ -28,13 +31,16 @@ export default class GameView {
       switch (localStorage.state) {
         case 'play':
           this.play();
+          this.hud.mountHudButtons();
           break;
         case 'win':
           this.unmountCanvas();
+          this.hud.unmountHudButtons();
           this.mountGameOverView('win');
           break;
         case 'lose':
           this.unmountCanvas();
+          this.hud.unmountHudButtons();
           this.mountGameOverView('lose');
           break;
         default:
