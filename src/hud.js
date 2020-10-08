@@ -1,5 +1,8 @@
 export default class HUD {
   constructor () {
+    // default unmounted
+    this.mounted = false;
+
     // help button 
     this.helpButton = document.createElement("i");
     this.helpButton.className = "fas fa-question help-button";
@@ -36,10 +39,14 @@ export default class HUD {
   }
 
   mountHudButtons () {
-    this.hudButtons.forEach(button => document.body.appendChild(button));
+    if (this.mounted === false) {
+      this.hudButtons.forEach(button => document.body.appendChild(button));
+    }
   }
 
   unmountHudButtons () {
-    this.hudButtons.forEach(button => document.body.removeChild(button));
+    if (this.mounted === true) {
+      this.hudButtons.forEach(button => document.body.removeChild(button));
+    }
   }
 }
