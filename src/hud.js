@@ -21,6 +21,8 @@ export default class HUD {
     
     // unmute / mute button
     this.soundButton = document.createElement("i");
+    // sound defaults to on
+    this.soundButton.className = "fas fa-volume-mute sound-button";
     this.soundButton.addEventListener("click", e => {
       e.preventDefault();
       if (localStorage.sound === 'on') {
@@ -41,12 +43,14 @@ export default class HUD {
   mountHudButtons () {
     if (this.mounted === false) {
       this.hudButtons.forEach(button => document.body.appendChild(button));
+      this.mounted = true;
     }
   }
 
   unmountHudButtons () {
     if (this.mounted === true) {
       this.hudButtons.forEach(button => document.body.removeChild(button));
+      this.mounted = false;
     }
   }
 }
