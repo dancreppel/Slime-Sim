@@ -14,6 +14,11 @@ export default class Game {
     this.creatures = [];
     this.moveDirX = 0;
     this.moveDirY = 0;
+
+    this.audioEle = [];
+    this.audioEle.push(this.ambientAudio);
+    // sound is defaulted to on
+    this.sound = true;
   }
 
   createPlayer () {
@@ -27,6 +32,9 @@ export default class Game {
       canvasCenter: pos,
       audioSrc: "assets/sounds/slurp.wav",
     });
+
+    // add eat sounds to audio array
+    this.audioEle.push(this.player.eatAudio);
   }
 
   generateMap () {
@@ -99,7 +107,7 @@ export default class Game {
 
   prerender () {
     // perform game logic before updating frame
-
+    this.checkAudio();
     // regular move
     this.move(false);
     // if a collision occurs, reverse move
@@ -194,5 +202,15 @@ export default class Game {
     this.creatures.forEach((creature) =>
       creature.movement(this.movementSpeed, this.entities, this.sandBox)
     );
+  }
+
+  checkAudio () {
+    if (localStorage.sound === 'on' && !this.sound) {
+      this.audioEle.forEach(ele => ele.muted = false);
+      this.sound = true;
+    } else if (localStorage.sound === 'off' && this.sound) {
+      this.audioEle.forEach(ele => ele.muted = true);
+      this.sound = false;
+    }
   }
 }
