@@ -1,28 +1,32 @@
 export default class HUD {
   constructor () {
     // help button 
-    this.helpButton = document.createElement("button");
-    this.helpButton.className = "help-button";
+    this.helpButton = document.createElement("i");
+    this.helpButton.className = "fas fa-question help-button";
     this.helpButton.addEventListener("click", e => {
       e.preventDefault();
       localStorage.setItem('state', 'help');
     });
     
     // pause button
-    this.pauseButton = document.createElement("button");
-    this.pauseButton.className = "pause-button";
+    this.pauseButton = document.createElement("i");
+    this.pauseButton.className = "fas fa-pause pause-button";
     this.pauseButton.addEventListener("click", e => {
       e.preventDefault();
       localStorage.setItem('state', 'pause')
     });
     
     // unmute / mute button
-    this.soundButton = document.createElement("button");
-    this.soundButton.className = "sound-button";
+    this.soundButton = document.createElement("i");
     this.soundButton.addEventListener("click", e => {
       e.preventDefault();
-      if (localStorage.sound === 'on') localStorage.setItem('sound', 'off');
-      else localStorage.setItem('sound', 'on');
+      if (localStorage.sound === 'on') {
+        localStorage.setItem("sound", "off");
+        this.soundButton.className = "fas fa-volume-mute sound-button";
+      } else {
+        localStorage.setItem("sound", "on");
+        this.soundButton.className = "fas fa-volume-up sound-button";
+      }
     });
 
     this.hudButtons = [];
