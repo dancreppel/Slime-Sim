@@ -90,6 +90,8 @@ export default class Game {
     this.generateMap();
     this.generateEntities();
     this.generateEnemies();
+    // sound is on by default
+    localStorage.setItem('sound', 'on');
     // play ambient noise in loop
     this.ambientAudio.play();
     this.ambientAudio.loop = true;
