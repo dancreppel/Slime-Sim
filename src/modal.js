@@ -1,10 +1,7 @@
 export default class Modal {
-  constructor (options) {
-    // active determines if modal element is visible
-    // default to false
-    this.active = false;
-
+  constructor (window) {
     this.view = document.createElement("div");
-    this.view.setAttribute("class", "modal");
+    this.view.className = "modal";
+    this.view.appendChild(window);
   }
 }
