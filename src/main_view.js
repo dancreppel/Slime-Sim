@@ -24,14 +24,14 @@ export default class MainView {
   mount () {
     if (localStorage.state === 'main' && !this.mounted) {
       this.mounted = true;
-      document.appendChild(this.main);
+      document.body.appendChild(this.main);
       document.addEventListener("keydown", this.enterHandler);
     }
   }
 
   unmount () {
     if (localStorage.state === 'play' && this.mounted) {
-      document.removeChild(this.main);
+      document.body.removeChild(this.main);
       document.removeEventListener("keydown", this.enterHandler);
     }
   }
