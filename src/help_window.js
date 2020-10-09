@@ -24,8 +24,7 @@ export default class HelpWindow {
     this.goal.className = "goal-div";
     this.goalGif = new Image();
     this.goalGif.className = "goal-gif";
-    // ! make goal gif
-    // this.goalGif.src = ; 
+    this.goalGif.src = "assets/sprites/consume.gif"; 
     this.goalInfo = document.createElement("p");
     this.goalInfo.className = "goal-info";
     this.goalInfo.innerHTML = "Consume enemies by absorbing creatures smaller than yourself."
@@ -38,8 +37,7 @@ export default class HelpWindow {
     this.warning.className = "warning-div";
     this.warningGif = new Image();
     this.warningGif.className = "warning-gif";
-    // ! make warning gif
-    this.warningGif.src;
+    this.warningGif.src = "assets/sprites/lose.gif";
     this.warningInfo = document.createElement("p");
     this.warningInfo.className = "warning-info";
     this.warningInfo.innerHTML = "Be sure to not eat more than you can chew or else you will lose."
