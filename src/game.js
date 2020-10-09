@@ -7,6 +7,7 @@ export default class Game {
   constructor (options) {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
+    this.canvas = options.canvas;
     this.ctx = options.ctx;
     this.ambientAudio = new Audio(options.ambientSrc);
     this.movementSpeed = options.movementSpeed;
@@ -17,8 +18,13 @@ export default class Game {
 
     this.audioEle = [];
     this.audioEle.push(this.ambientAudio);
-    // sound is defaulted to on
-    this.sound = true;
+
+    // mounted default to false
+    this.mounted = false;
+
+    // keybinds do not exist so state is false
+    this.keybinds = false;
+
   }
 
   createPlayer () {
@@ -93,16 +99,21 @@ export default class Game {
   }
 
   start () {
-    this.setKeyBinds();
-    this.createPlayer();
-    this.generateMap();
-    this.generateEntities();
-    this.generateEnemies();
-    // sound is on by default
-    localStorage.setItem('sound', 'on');
-    // play ambient noise in loop
-    this.ambientAudio.play();
-    this.ambientAudio.loop = true;
+    // only start game if game instance has not been mounted before
+    if (!this.mounted) {
+      // only set game keybinds once
+      if (!this.keybinds) this.setKeyBinds();
+      this.createPlayer();
+      this.generateMap();
+      this.generateEntities();
+      this.generateEnemies();
+      // sound is defaulted to on
+      this.sound = true;
+      localStorage.setItem("sound", "on");
+      // play ambient noise in loop
+      this.ambientAudio.play();
+      this.ambientAudio.loop = true;
+    }
   }
 
   prerender () {
@@ -168,6 +179,9 @@ export default class Game {
         this.moveDirY = 0;
       }
     });
+
+    // keybinds are set so change state to true
+    this.keyBinds = true;
   }
 
   move (reverse) {
