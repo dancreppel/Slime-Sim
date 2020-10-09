@@ -6,18 +6,11 @@ import HelpWindow from './help_window';
 import MainView from './main_view';
 
 export default class GameView {
-  constructor (options) {
-    // this.game = options.game;
-    this.setupGame();
-
+  constructor () {
     // default state starts with main menu
-    // ! testing
     localStorage.setItem('state', 'main');
-
-    // this.canvas = document.getElementById('canvas');
-    // this.canvas.mounted = true;
-
-    this.hud = new HUD();
+    
+    this.setup();
 
     this.main = new MainView();
 
@@ -47,7 +40,7 @@ export default class GameView {
     this.checkState();
   }
 
-  setupGame () {
+  setup () {
     const canvas = document.createElement("canvas");
     canvas.className = "canvas";
     const DIM_X = 1600;
@@ -66,6 +59,8 @@ export default class GameView {
       movementSpeed,
       ambientSrc: "assets/sounds/ambient.wav",
     });
+
+    this.hud = new HUD();
   }
 
   checkState () {
@@ -92,15 +87,15 @@ export default class GameView {
           this.unmountCanvas();
           this.hud.unmountHudButtons();
           this.mountGameOverView("win");
-          // reinitialize game
-          this.setupGame();
+          // reinitialize
+          this.setup();
           break;
         case "lose":
           this.unmountCanvas();
           this.hud.unmountHudButtons();
           this.mountGameOverView("lose");
-          // reinitialize game
-          this.setupGame();
+          // reinitialize
+          this.setup();
           break;
         default:
           break;
