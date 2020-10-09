@@ -1,4 +1,5 @@
 import GameOverView from './game_over_view';
+import Game from "./game";
 import HUD from './hud';
 import Modal from './modal';
 import HelpWindow from './help_window';
@@ -6,14 +7,15 @@ import MainView from './main_view';
 
 export default class GameView {
   constructor (options) {
-    this.game = options.game;
+    // this.game = options.game;
+    this.setupGame();
 
     // default state starts with main menu
     // ! testing
-    localStorage.setItem('state', 'play');
+    localStorage.setItem('state', 'main');
 
-    this.canvas = document.getElementById('canvas');
-    this.canvas.mounted = true;
+    // this.canvas = document.getElementById('canvas');
+    // this.canvas.mounted = true;
 
     this.hud = new HUD();
 
@@ -45,33 +47,60 @@ export default class GameView {
     this.checkState();
   }
 
+  setupGame () {
+    const canvas = document.createElement("canvas");
+    canvas.className = "canvas";
+    const DIM_X = 1600;
+    const DIM_Y = 900;
+    const ctx = canvas.getContext("2d");
+    const movementSpeed = 10;
+
+    canvas.width = DIM_X;
+    canvas.height = DIM_Y;
+
+    this.game = new Game({
+      DIM_X,
+      DIM_Y,
+      canvas,
+      ctx,
+      movementSpeed,
+      ambientSrc: "assets/sounds/ambient.wav",
+    });
+  }
+
   checkState () {
     // check 60 times a second
     setInterval(() => {
       switch (localStorage.state) {
-        case 'main':
+        case "main":
           this.main.mount();
           break;
-        case 'play':
-          this.play();
+        case "play":
           this.main.unmount();
           this.hud.mountHudButtons();
+          this.game.start();
+          this.mountCanvas();
+          this.play();
           break;
-        case 'pause':
+        case "pause":
           this.pauseModal.mount();
           break;
-        case 'help':
+        case "help":
           this.helpModal.mount();
           break;
-        case 'win':
+        case "win":
           this.unmountCanvas();
           this.hud.unmountHudButtons();
-          this.mountGameOverView('win');
+          this.mountGameOverView("win");
+          // reinitialize game
+          this.setupGame();
           break;
-        case 'lose':
+        case "lose":
           this.unmountCanvas();
           this.hud.unmountHudButtons();
-          this.mountGameOverView('lose');
+          this.mountGameOverView("lose");
+          // reinitialize game
+          this.setupGame();
           break;
         default:
           break;
@@ -85,17 +114,18 @@ export default class GameView {
     this.game.render(this.game.ctx);
   }
 
-  // mountCanvas () {
-  //   if (!this.canvas.mounted) {
-  //     document.body.appendChild
-  //   }
-  // }
+  mountCanvas () {
+    if (!this.game.mounted) {
+      document.body.appendChild(this.game.canvas);
+      this.game.mounted = true;
+    }
+  }
 
   unmountCanvas () {
     // only remove canvas element if it is mounted
-    if (this.canvas.mounted) {
-      document.body.removeChild(this.canvas);
-      this.canvas.mounted = false;
+    if (this.game.mounted) {
+      document.body.removeChild(this.game.canvas);
+      this.game.mounted = false;
     }
   }
 
