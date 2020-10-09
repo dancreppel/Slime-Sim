@@ -1,5 +1,7 @@
 import GameOverView from './game_over_view';
 import HUD from './hud';
+import Modal from './modal';
+import HelpWindow from './help_window';
 
 export default class GameView {
   constructor (options) {
@@ -14,6 +16,7 @@ export default class GameView {
 
     this.hud = new HUD();
 
+    // * game over views
     this.loseView = new GameOverView({
       type: 'lose'
     });
@@ -21,6 +24,13 @@ export default class GameView {
     this.winView = new GameOverView({
       type: 'win'
     });
+
+    // * modal and its windows
+    this.helpWindow = new HelpWindow();
+    this.helpModal = new Modal(this.helpWindow);
+
+    this.pauseWindow = document.createElement("p").innerHTML = "Paused";
+    this.pauseModal = new Modal(this.pauseWindow);
 
     this.checkState();
   }
@@ -32,6 +42,12 @@ export default class GameView {
         case 'play':
           this.play();
           this.hud.mountHudButtons();
+          break;
+        case 'pause':
+          this.pauseModal.mount();
+          break;
+        case 'help':
+          this.helpModal.mount();
           break;
         case 'win':
           this.unmountCanvas();
