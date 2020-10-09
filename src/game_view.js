@@ -27,11 +27,17 @@ export default class GameView {
 
     // * modal and its windows
     this.helpWindow = new HelpWindow();
-    this.helpModal = new Modal(this.helpWindow.window);
+    this.helpModal = new Modal({
+      type: 'help',
+      window: this.helpWindow.window
+    });
 
     this.pauseWindow = document.createElement("p")
     this.pauseWindow.innerHTML = "Paused";
-    this.pauseModal = new Modal(this.pauseWindow);
+    this.pauseModal = new Modal({
+      type: 'pause',
+      window: this.pauseWindow
+    });
 
     this.checkState();
   }
