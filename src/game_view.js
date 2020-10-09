@@ -9,8 +9,6 @@ export default class GameView {
   constructor () {
     // default state starts with main menu
     localStorage.setItem('state', 'main');
-    
-    this.setup();
 
     this.main = new MainView();
 
@@ -69,6 +67,7 @@ export default class GameView {
       switch (localStorage.state) {
         case "main":
           this.main.mount();
+          this.setup();
           break;
         case "play":
           this.main.unmount();
@@ -85,17 +84,15 @@ export default class GameView {
           break;
         case "win":
           this.unmountCanvas();
+          this.game.ambientAudio.pause();
           this.hud.unmountHudButtons();
           this.mountGameOverView("win");
-          // reinitialize
-          this.setup();
           break;
         case "lose":
+          this.game.ambientAudio.pause();
           this.unmountCanvas();
           this.hud.unmountHudButtons();
           this.mountGameOverView("lose");
-          // reinitialize
-          this.setup();
           break;
         default:
           break;
