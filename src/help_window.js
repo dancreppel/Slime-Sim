@@ -14,7 +14,7 @@ export default class HelpWindow {
     this.controlsDiv.className = "controls-div";
 
     this.controlsImg = new Image();
-    this.controlsImg.src = "assets/sprites/arrow-keys.png";
+    this.controlsImg.src = "assets/sprites/arrowKeys.png";
     this.controlsImg.className = "controls-img";
 
     this.controlsInfo = document.createElement("p");
