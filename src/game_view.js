@@ -12,11 +12,15 @@ export default class GameView {
 
     this.main = new MainView();
 
+    // create game over sounds
+    this.playGameOverSound = false;
+    this.loseSound = new Audio('assets/sounds/lose.wav');
+    this.winSound = new Audio('assets/sounds/win.wav');
+
     // * game over views
     this.loseView = new GameOverView({
       type: 'lose'
     });
-
     this.winView = new GameOverView({
       type: 'win'
     });
@@ -27,7 +31,6 @@ export default class GameView {
       type: 'help',
       window: this.helpWindow.window
     });
-
     this.pauseWindow = document.createElement("p")
     this.pauseWindow.innerHTML = "Paused";
     this.pauseModal = new Modal({
@@ -71,6 +74,7 @@ export default class GameView {
           break;
         case "play":
           this.main.unmount();
+          this.playGameOverSound = true;
           this.hud.mountHudButtons();
           this.game.start();
           this.mountCanvas();
@@ -87,12 +91,14 @@ export default class GameView {
           this.game.ambientAudio.pause();
           this.hud.unmountHudButtons();
           this.mountGameOverView("win");
+          this.gameOverSound();
           break;
         case "lose":
           this.game.ambientAudio.pause();
           this.unmountCanvas();
           this.hud.unmountHudButtons();
           this.mountGameOverView("lose");
+          this.gameOverSound();
           break;
         default:
           break;
@@ -128,6 +134,16 @@ export default class GameView {
     } else if (type === 'lose' && !this.loseView.mounted) {
       document.body.appendChild(this.loseView.gameOverView);
       this.loseView.mounted = true;
+    }
+  }
+
+  gameOverSound () {
+    if (localStorage.state === 'win' && this.playGameOverSound) {
+      this.winSound.play();
+      this.playGameOverSound = false;
+    } else if (localStorage.state === 'lose' && this.playGameOverSound) {
+      this.loseSound.play();
+      this.playGameOverSound = false;
     }
   }
 }
