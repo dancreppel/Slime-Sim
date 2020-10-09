@@ -17,7 +17,9 @@ export default class MainView {
     this.main.appendChild(this.startMessage);
 
     this.enterHandler = e => {
-      if (e.key === "enter") localStorage.setItem("state", "play");
+      if (e.key === "Enter") {
+        localStorage.setItem("state", "play");
+    }
     }
   }
 
@@ -31,6 +33,7 @@ export default class MainView {
 
   unmount () {
     if (localStorage.state === 'play' && this.mounted) {
+      this.mounted = false;
       document.body.removeChild(this.main);
       document.removeEventListener("keydown", this.enterHandler);
     }
