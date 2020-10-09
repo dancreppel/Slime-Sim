@@ -153,7 +153,7 @@ export default class Game {
     // handle keydownfor arrow keys
     document.addEventListener("keydown", (e) => {
       e.preventDefault();
-      let speed = this.movementSpeed * 2;
+      let speed = this.movementSpeed;
       switch (e.key) {
         case "ArrowUp":
           this.moveDirY = speed;
