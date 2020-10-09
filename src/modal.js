@@ -3,10 +3,11 @@ export default class Modal {
     // default mounted false
     this.mounted = false;
     this.type = options.type;
+    this.window = options.window;
 
     this.modal = document.createElement("div");
     this.modal.className = "modal";
-    this.modal.appendChild(options.window);
+    this.modal.appendChild(this.window);
 
     this.closeButton = document.createElement("i");
     this.closeButton.className = "material-icons close-button";
@@ -15,7 +16,8 @@ export default class Modal {
       this.unmount();
       localStorage.setItem('state', 'play');
     });
-    this.modal.appendChild(this.closeButton);
+    
+    this.window.appendChild(this.closeButton);
   }
 
   unmount () {
