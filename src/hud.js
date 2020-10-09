@@ -3,14 +3,14 @@ export default class HUD {
     // default unmounted
     this.mounted = false;
 
-    // // help button 
-    // this.helpButton = document.createElement('i');
-    // this.helpButton.className = "material-icons help-button";
-    // this.helpButton.innerHTML = "help";
-    // this.helpButton.addEventListener("click", e => {
-    //   e.preventDefault();
-    //   localStorage.setItem('state', 'help');
-    // });
+    // help button 
+    this.helpButton = document.createElement('i');
+    this.helpButton.className = "material-icons help-button";
+    this.helpButton.innerHTML = "help";
+    this.helpButton.addEventListener("click", e => {
+      e.preventDefault();
+      localStorage.setItem('state', 'help');
+    });
     
     // pause button
     this.pauseButton = document.createElement('i');
@@ -38,7 +38,7 @@ export default class HUD {
     });
 
     this.hudButtons = [];
-    // this.hudButtons.push(this.helpButton);
+    this.hudButtons.push(this.helpButton);
     this.hudButtons.push(this.pauseButton);
     this.hudButtons.push(this.soundButton);
   }
