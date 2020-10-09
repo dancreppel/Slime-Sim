@@ -7,13 +7,23 @@ export default class Game {
   constructor (options) {
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
+    this.canvas = options.canvas;
     this.ctx = options.ctx;
-    this.ambientAudio = new Audio(options.ambientSrc);
-    this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
     this.moveDirX = 0;
     this.moveDirY = 0;
+    this.ambientSrc = options.ambientSrc;
+    this.movementSpeed = options.movementSpeed;
+
+    // mounted default to false
+    this.mounted = false;
+
+    // keybinds do not exist so state is false
+    this.keybinds = false;
+
+    // instantiate ambient sound
+    this.ambientAudio = new Audio(this.ambientSrc);
   }
 
   createPlayer () {
@@ -27,6 +37,9 @@ export default class Game {
       canvasCenter: pos,
       audioSrc: "assets/sounds/slurp.wav",
     });
+
+    // add eat sounds to audio array
+    this.audioEle.push(this.player.eatAudio);
   }
 
   generateMap () {
@@ -85,21 +98,34 @@ export default class Game {
   }
 
   start () {
-    this.setKeyBinds();
-    this.createPlayer();
-    this.generateMap();
-    this.generateEntities();
-    this.generateEnemies();
-    // sound is on by default
-    localStorage.setItem('sound', 'on');
-    // play ambient noise in loop
-    this.ambientAudio.play();
-    this.ambientAudio.loop = true;
+    // only start game if game instance has not been mounted before
+    if (!this.mounted) {
+      // only set game keybinds once
+      if (!this.keybinds) this.setKeyBinds();
+      
+      // sound is defaulted to on
+      this.sound = true;
+      localStorage.setItem("sound", "on");
+      
+      // instantiate sound array
+      this.audioEle = [];
+      this.audioEle.push(this.ambientAudio);
+
+      this.ambientAudio.play();
+      this.ambientAudio.loop = true;
+
+      // instantiate game assets
+      this.createPlayer();
+      this.generateMap();
+      this.generateEntities();
+      this.generateEnemies();
+
+    }
   }
 
   prerender () {
     // perform game logic before updating frame
-
+    this.checkAudio();
     // regular move
     this.move(false);
     // if a collision occurs, reverse move
@@ -160,6 +186,9 @@ export default class Game {
         this.moveDirY = 0;
       }
     });
+
+    // keybinds are set so change state to true
+    this.keyBinds = true;
   }
 
   move (reverse) {
@@ -194,5 +223,15 @@ export default class Game {
     this.creatures.forEach((creature) =>
       creature.movement(this.movementSpeed, this.entities, this.sandBox)
     );
+  }
+
+  checkAudio () {
+    if (localStorage.sound === 'on' && !this.sound) {
+      this.audioEle.forEach(ele => ele.muted = false);
+      this.sound = true;
+    } else if (localStorage.sound === 'off' && this.sound) {
+      this.audioEle.forEach(ele => ele.muted = true);
+      this.sound = false;
+    }
   }
 }

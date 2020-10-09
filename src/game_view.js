@@ -1,25 +1,67 @@
 import GameOverView from './game_over_view';
+import Game from "./game";
+import HUD from './hud';
+import Modal from './modal';
+import HelpWindow from './help_window';
+import MainView from './main_view';
 
 export default class GameView {
-  constructor (options) {
-    this.game = options.game;
-
+  constructor () {
     // default state starts with main menu
-    // ! testing
-    localStorage.setItem('state', 'play');
+    localStorage.setItem('state', 'main');
 
-    this.canvas = document.getElementById('canvas');
-    this.canvas.mounted = true;
+    this.main = new MainView();
 
+    // create game over sounds
+    this.playGameOverSound = false;
+    this.loseSound = new Audio('assets/sounds/lose.wav');
+    this.winSound = new Audio('assets/sounds/win.wav');
+
+    // * game over views
     this.loseView = new GameOverView({
       type: 'lose'
     });
-
     this.winView = new GameOverView({
       type: 'win'
     });
 
+    // * modal and its windows
+    this.helpWindow = new HelpWindow();
+    this.helpModal = new Modal({
+      type: 'help',
+      window: this.helpWindow.window
+    });
+    this.pauseWindow = document.createElement("p")
+    this.pauseWindow.innerHTML = "Paused";
+    this.pauseModal = new Modal({
+      type: 'pause',
+      window: this.pauseWindow
+    });
+
     this.checkState();
+  }
+
+  setup () {
+    const canvas = document.createElement("canvas");
+    canvas.className = "canvas";
+    const DIM_X = 1600;
+    const DIM_Y = 900;
+    const ctx = canvas.getContext("2d");
+    const movementSpeed = 10;
+
+    canvas.width = DIM_X;
+    canvas.height = DIM_Y;
+
+    this.game = new Game({
+      DIM_X,
+      DIM_Y,
+      canvas,
+      ctx,
+      movementSpeed,
+      ambientSrc: "assets/sounds/ambient.wav",
+    });
+
+    this.hud = new HUD();
   }
 
   checkState () {
@@ -27,16 +69,37 @@ export default class GameView {
     // webpack
     setInterval(() => {
       switch (localStorage.state) {
-        case 'play':
+        case "main":
+          this.main.mount();
+          this.setup();
+          break;
+        case "play":
+          this.main.unmount();
+          this.playGameOverSound = true;
+          this.hud.mountHudButtons();
+          this.game.start();
+          this.mountCanvas();
           this.play();
           break;
-        case 'win':
-          this.unmountCanvas();
-          this.mountGameOverView('win');
+        case "pause":
+          this.pauseModal.mount();
           break;
-        case 'lose':
+        case "help":
+          this.helpModal.mount();
+          break;
+        case "win":
           this.unmountCanvas();
-          this.mountGameOverView('lose');
+          this.game.ambientAudio.pause();
+          this.hud.unmountHudButtons();
+          this.mountGameOverView("win");
+          this.gameOverSound();
+          break;
+        case "lose":
+          this.game.ambientAudio.pause();
+          this.unmountCanvas();
+          this.hud.unmountHudButtons();
+          this.mountGameOverView("lose");
+          this.gameOverSound();
           break;
         default:
           break;
@@ -50,17 +113,18 @@ export default class GameView {
     this.game.render(this.game.ctx);
   }
 
-  // mountCanvas () {
-  //   if (!this.canvas.mounted) {
-  //     document.body.appendChild
-  //   }
-  // }
+  mountCanvas () {
+    if (!this.game.mounted) {
+      document.body.appendChild(this.game.canvas);
+      this.game.mounted = true;
+    }
+  }
 
   unmountCanvas () {
     // only remove canvas element if it is mounted
-    if (this.canvas.mounted) {
-      document.body.removeChild(this.canvas);
-      this.canvas.mounted = false;
+    if (this.game.mounted) {
+      document.body.removeChild(this.game.canvas);
+      this.game.mounted = false;
     }
   }
 
@@ -71,6 +135,16 @@ export default class GameView {
     } else if (type === 'lose' && !this.loseView.mounted) {
       document.body.appendChild(this.loseView.gameOverView);
       this.loseView.mounted = true;
+    }
+  }
+
+  gameOverSound () {
+    if (localStorage.state === 'win' && this.playGameOverSound) {
+      this.winSound.play();
+      this.playGameOverSound = false;
+    } else if (localStorage.state === 'lose' && this.playGameOverSound) {
+      this.loseSound.play();
+      this.playGameOverSound = false;
     }
   }
 }

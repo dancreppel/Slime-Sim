@@ -19,7 +19,7 @@ export default class GameOverView {
     // instantiate replay button
     this.replayButton = document.createElement("button");
     this.replayButton.className = 'replay-button';
-    this.replayButton.value = 'Replay';
+    this.replayButton.innerHTML = 'Replay';
     this.replayButton.addEventListener("click", e => {
       e.preventDefault();
       this.replay();
@@ -32,5 +32,7 @@ export default class GameOverView {
 
   replay () {
     localStorage.setItem('state', 'main');
+    document.body.removeChild(this.gameOverView);
+    this.mounted = false;
   }
 }

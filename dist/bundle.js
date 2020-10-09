@@ -358,13 +358,20 @@ var Game = /*#__PURE__*/function () {
 
     this.DIM_X = options.DIM_X;
     this.DIM_Y = options.DIM_Y;
+    this.canvas = options.canvas;
     this.ctx = options.ctx;
-    this.ambientAudio = new Audio(options.ambientSrc);
-    this.movementSpeed = options.movementSpeed;
     this.entities = [];
     this.creatures = [];
     this.moveDirX = 0;
     this.moveDirY = 0;
+    this.ambientSrc = options.ambientSrc;
+    this.movementSpeed = options.movementSpeed; // mounted default to false
+
+    this.mounted = false; // keybinds do not exist so state is false
+
+    this.keybinds = false; // instantiate ambient sound
+
+    this.ambientAudio = new Audio(this.ambientSrc);
   }
 
   _createClass(Game, [{
@@ -379,7 +386,9 @@ var Game = /*#__PURE__*/function () {
         src: "assets/sprites/slime.png",
         canvasCenter: pos,
         audioSrc: "assets/sounds/slurp.wav"
-      });
+      }); // add eat sounds to audio array
+
+      this.audioEle.push(this.player.eatAudio);
     }
   }, {
     key: "generateMap",
@@ -460,22 +469,31 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "start",
     value: function start() {
-      this.setKeyBinds();
-      this.createPlayer();
-      this.generateMap();
-      this.generateEntities();
-      this.generateEnemies(); // sound is on by default
+      // only start game if game instance has not been mounted before
+      if (!this.mounted) {
+        // only set game keybinds once
+        if (!this.keybinds) this.setKeyBinds(); // sound is defaulted to on
 
-      localStorage.setItem('sound', 'on'); // play ambient noise in loop
+        this.sound = true;
+        localStorage.setItem("sound", "on"); // instantiate sound array
 
-      this.ambientAudio.play();
-      this.ambientAudio.loop = true;
+        this.audioEle = [];
+        this.audioEle.push(this.ambientAudio);
+        this.ambientAudio.play();
+        this.ambientAudio.loop = true; // instantiate game assets
+
+        this.createPlayer();
+        this.generateMap();
+        this.generateEntities();
+        this.generateEnemies();
+      }
     }
   }, {
     key: "prerender",
     value: function prerender() {
       // perform game logic before updating frame
-      // regular move
+      this.checkAudio(); // regular move
+
       this.move(false); // if a collision occurs, reverse move
 
       if (this.checkCollision() || this.sandBox.outOfBounds(this.player)) {
@@ -548,7 +566,9 @@ var Game = /*#__PURE__*/function () {
         if (verKeys.includes(e.key)) {
           _this.moveDirY = 0;
         }
-      });
+      }); // keybinds are set so change state to true
+
+      this.keyBinds = true;
     }
   }, {
     key: "move",
@@ -590,6 +610,21 @@ var Game = /*#__PURE__*/function () {
       this.creatures.forEach(function (creature) {
         return creature.movement(_this4.movementSpeed, _this4.entities, _this4.sandBox);
       });
+    }
+  }, {
+    key: "checkAudio",
+    value: function checkAudio() {
+      if (localStorage.sound === 'on' && !this.sound) {
+        this.audioEle.forEach(function (ele) {
+          return ele.muted = false;
+        });
+        this.sound = true;
+      } else if (localStorage.sound === 'off' && this.sound) {
+        this.audioEle.forEach(function (ele) {
+          return ele.muted = true;
+        });
+        this.sound = false;
+      }
     }
   }]);
 
@@ -636,7 +671,7 @@ var GameOverView = /*#__PURE__*/function () {
 
     this.replayButton = document.createElement("button");
     this.replayButton.className = 'replay-button';
-    this.replayButton.value = 'Replay';
+    this.replayButton.innerHTML = 'Replay';
     this.replayButton.addEventListener("click", function (e) {
       e.preventDefault();
 
@@ -651,6 +686,8 @@ var GameOverView = /*#__PURE__*/function () {
     key: "replay",
     value: function replay() {
       localStorage.setItem('state', 'main');
+      document.body.removeChild(this.gameOverView);
+      this.mounted = false;
     }
   }]);
 
@@ -672,6 +709,11 @@ var GameOverView = /*#__PURE__*/function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GameView; });
 /* harmony import */ var _game_over_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game_over_view */ "./src/game_over_view.js");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./game */ "./src/game.js");
+/* harmony import */ var _hud__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./hud */ "./src/hud.js");
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modal */ "./src/modal.js");
+/* harmony import */ var _help_window__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./help_window */ "./src/help_window.js");
+/* harmony import */ var _main_view__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./main_view */ "./src/main_view.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -680,26 +722,66 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
+
+
+
+
 var GameView = /*#__PURE__*/function () {
-  function GameView(options) {
+  function GameView() {
     _classCallCheck(this, GameView);
 
-    this.game = options.game; // default state starts with main menu
-    // ! testing
+    // default state starts with main menu
+    localStorage.setItem('state', 'main');
+    this.main = new _main_view__WEBPACK_IMPORTED_MODULE_5__["default"](); // create game over sounds
 
-    localStorage.setItem('state', 'play');
-    this.canvas = document.getElementById('canvas');
-    this.canvas.mounted = true;
+    this.playGameOverSound = false;
+    this.loseSound = new Audio('assets/sounds/lose.wav');
+    this.winSound = new Audio('assets/sounds/win.wav'); // * game over views
+
     this.loseView = new _game_over_view__WEBPACK_IMPORTED_MODULE_0__["default"]({
       type: 'lose'
     });
     this.winView = new _game_over_view__WEBPACK_IMPORTED_MODULE_0__["default"]({
       type: 'win'
+    }); // * modal and its windows
+
+    this.helpWindow = new _help_window__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    this.helpModal = new _modal__WEBPACK_IMPORTED_MODULE_3__["default"]({
+      type: 'help',
+      window: this.helpWindow.window
+    });
+    this.pauseWindow = document.createElement("p");
+    this.pauseWindow.innerHTML = "Paused";
+    this.pauseModal = new _modal__WEBPACK_IMPORTED_MODULE_3__["default"]({
+      type: 'pause',
+      window: this.pauseWindow
     });
     this.checkState();
   }
 
   _createClass(GameView, [{
+    key: "setup",
+    value: function setup() {
+      var canvas = document.createElement("canvas");
+      canvas.className = "canvas";
+      var DIM_X = 1600;
+      var DIM_Y = 900;
+      var ctx = canvas.getContext("2d");
+      var movementSpeed = 10;
+      canvas.width = DIM_X;
+      canvas.height = DIM_Y;
+      this.game = new _game__WEBPACK_IMPORTED_MODULE_1__["default"]({
+        DIM_X: DIM_X,
+        DIM_Y: DIM_Y,
+        canvas: canvas,
+        ctx: ctx,
+        movementSpeed: movementSpeed,
+        ambientSrc: "assets/sounds/ambient.wav"
+      });
+      this.hud = new _hud__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    }
+  }, {
     key: "checkState",
     value: function checkState() {
       var _this = this;
@@ -708,22 +790,61 @@ var GameView = /*#__PURE__*/function () {
       // webpack
       setInterval(function () {
         switch (localStorage.state) {
-          case 'play':
+          case "main":
+            _this.main.mount();
+
+            _this.setup();
+
+            break;
+
+          case "play":
+            _this.main.unmount();
+
+            _this.playGameOverSound = true;
+
+            _this.hud.mountHudButtons();
+
+            _this.game.start();
+
+            _this.mountCanvas();
+
             _this.play();
 
             break;
 
-          case 'win':
-            _this.unmountCanvas();
-
-            _this.mountGameOverView('win');
+          case "pause":
+            _this.pauseModal.mount();
 
             break;
 
-          case 'lose':
+          case "help":
+            _this.helpModal.mount();
+
+            break;
+
+          case "win":
             _this.unmountCanvas();
 
-            _this.mountGameOverView('lose');
+            _this.game.ambientAudio.pause();
+
+            _this.hud.unmountHudButtons();
+
+            _this.mountGameOverView("win");
+
+            _this.gameOverSound();
+
+            break;
+
+          case "lose":
+            _this.game.ambientAudio.pause();
+
+            _this.unmountCanvas();
+
+            _this.hud.unmountHudButtons();
+
+            _this.mountGameOverView("lose");
+
+            _this.gameOverSound();
 
             break;
 
@@ -738,19 +859,22 @@ var GameView = /*#__PURE__*/function () {
       this.game.clear(this.game.ctx);
       this.game.prerender();
       this.game.render(this.game.ctx);
-    } // mountCanvas () {
-    //   if (!this.canvas.mounted) {
-    //     document.body.appendChild
-    //   }
-    // }
-
+    }
+  }, {
+    key: "mountCanvas",
+    value: function mountCanvas() {
+      if (!this.game.mounted) {
+        document.body.appendChild(this.game.canvas);
+        this.game.mounted = true;
+      }
+    }
   }, {
     key: "unmountCanvas",
     value: function unmountCanvas() {
       // only remove canvas element if it is mounted
-      if (this.canvas.mounted) {
-        document.body.removeChild(this.canvas);
-        this.canvas.mounted = false;
+      if (this.game.mounted) {
+        document.body.removeChild(this.game.canvas);
+        this.game.mounted = false;
       }
     }
   }, {
@@ -764,9 +888,195 @@ var GameView = /*#__PURE__*/function () {
         this.loseView.mounted = true;
       }
     }
+  }, {
+    key: "gameOverSound",
+    value: function gameOverSound() {
+      if (localStorage.state === 'win' && this.playGameOverSound) {
+        this.winSound.play();
+        this.playGameOverSound = false;
+      } else if (localStorage.state === 'lose' && this.playGameOverSound) {
+        this.loseSound.play();
+        this.playGameOverSound = false;
+      }
+    }
   }]);
 
   return GameView;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/help_window.js":
+/*!****************************!*\
+  !*** ./src/help_window.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return HelpWindow; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var HelpWindow = /*#__PURE__*/function () {
+  function HelpWindow() {
+    _classCallCheck(this, HelpWindow);
+
+    this.window = document.createElement("div");
+    this.window.className = "help-window"; // * game description
+
+    this.description = document.createElement("p");
+    this.description.innerHTML = "In this oasis, you live as the weakest" + " creature, a slime.  However, fortune has smiled on you.  Now you can" + " consume your enemies.  Grow until you become the new king of the oasis!"; // * div housing controls image and info
+
+    this.controlsDiv = document.createElement("div");
+    this.controlsDiv.className = "controls-div";
+    this.controlsImg = new Image();
+    this.controlsImg.src = "assets/sprites/arrowKeys.png";
+    this.controlsImg.className = "controls-img";
+    this.controlsInfo = document.createElement("p");
+    this.controlsInfo.innerHTML = "Use arrow keys for directional control.";
+    this.controlsInfo.className = "controls-info"; // append info and img to controls div
+
+    this.controlsDiv.appendChild(this.controlsImg);
+    this.controlsDiv.appendChild(this.controlsInfo); // * Goals
+
+    this.goal = document.createElement("div");
+    this.goal.className = "goal-div";
+    this.goalGif = new Image();
+    this.goalGif.className = "goal-gif"; // ! make goal gif
+    // this.goalGif.src = ; 
+
+    this.goalInfo = document.createElement("p");
+    this.goalInfo.className = "goal-info";
+    this.goalInfo.innerHTML = "Consume enemies by absorbing creatures smaller than yourself."; // append gif and info to div
+
+    this.goal.appendChild(this.goalGif);
+    this.goal.appendChild(this.goalInfo); // * Warning
+
+    this.warning = document.createElement("div");
+    this.warning.className = "warning-div";
+    this.warningGif = new Image();
+    this.warningGif.className = "warning-gif"; // ! make warning gif
+
+    this.warningGif.src;
+    this.warningInfo = document.createElement("p");
+    this.warningInfo.className = "warning-info";
+    this.warningInfo.innerHTML = "Be sure to not eat more than you can chew or else you will lose."; // append gif and info to div
+
+    this.warning.appendChild(this.warningGif);
+    this.warning.appendChild(this.warningInfo); // * append description, controls, goal, and warning to help window
+
+    this.window.appendChild(this.description);
+    this.window.appendChild(this.controlsDiv);
+    this.window.appendChild(this.goal);
+    this.window.appendChild(this.warning);
+  }
+
+  _createClass(HelpWindow, [{
+    key: "appendTo",
+    value: function appendTo(parent) {
+      parent.appendChild(this.window);
+    }
+  }]);
+
+  return HelpWindow;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/hud.js":
+/*!********************!*\
+  !*** ./src/hud.js ***!
+  \********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return HUD; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var HUD = /*#__PURE__*/function () {
+  function HUD() {
+    var _this = this;
+
+    _classCallCheck(this, HUD);
+
+    // default unmounted
+    this.mounted = false; // help button 
+
+    this.helpButton = document.createElement('i');
+    this.helpButton.className = "material-icons help-button";
+    this.helpButton.innerHTML = "help";
+    this.helpButton.addEventListener("click", function (e) {
+      e.preventDefault();
+      localStorage.setItem('state', 'help');
+    }); // pause button
+
+    this.pauseButton = document.createElement('i');
+    this.pauseButton.className = "material-icons pause-button";
+    this.pauseButton.innerHTML = "pause_circle_filled";
+    this.pauseButton.addEventListener("click", function (e) {
+      e.preventDefault();
+      localStorage.setItem('state', 'pause');
+    }); // unmute / mute button
+
+    this.soundButton = document.createElement('i'); // sound defaults to on
+
+    this.soundButton.className = "material-icons sound-button";
+    this.soundButton.innerHTML = "volume_up";
+    this.soundButton.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      if (localStorage.sound === 'on') {
+        localStorage.setItem("sound", "off");
+        _this.soundButton.innerHTML = "volume_off";
+      } else {
+        localStorage.setItem("sound", "on");
+        _this.soundButton.innerHTML = "volume_up";
+      }
+    });
+    this.hudButtons = [];
+    this.hudButtons.push(this.helpButton);
+    this.hudButtons.push(this.pauseButton);
+    this.hudButtons.push(this.soundButton);
+  }
+
+  _createClass(HUD, [{
+    key: "mountHudButtons",
+    value: function mountHudButtons() {
+      if (this.mounted === false) {
+        this.hudButtons.forEach(function (button) {
+          return document.body.appendChild(button);
+        });
+        this.mounted = true;
+      }
+    }
+  }, {
+    key: "unmountHudButtons",
+    value: function unmountHudButtons() {
+      if (this.mounted === true) {
+        this.hudButtons.forEach(function (button) {
+          return document.body.removeChild(button);
+        });
+        this.mounted = false;
+      }
+    }
+  }]);
+
+  return HUD;
 }();
 
 
@@ -782,30 +1092,79 @@ var GameView = /*#__PURE__*/function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game */ "./src/game.js");
-/* harmony import */ var _game_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./game_view */ "./src/game_view.js");
-
+/* harmony import */ var _game_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game_view */ "./src/game_view.js");
 
 document.addEventListener("DOMContentLoaded", function () {
-  var canvas = document.getElementById('canvas');
-  var DIM_X = 1600;
-  var DIM_Y = 900;
-  var ctx = canvas.getContext('2d');
-  var movementSpeed = 10;
-  canvas.width = DIM_X;
-  canvas.height = DIM_Y;
-  var game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"]({
-    DIM_X: DIM_X,
-    DIM_Y: DIM_Y,
-    ctx: ctx,
-    movementSpeed: movementSpeed,
-    ambientSrc: "assets/sounds/ambient.wav"
-  });
-  game.start();
-  var gameView = new _game_view__WEBPACK_IMPORTED_MODULE_1__["default"]({
-    game: game
-  });
+  new _game_view__WEBPACK_IMPORTED_MODULE_0__["default"]();
 });
+
+/***/ }),
+
+/***/ "./src/main_view.js":
+/*!**************************!*\
+  !*** ./src/main_view.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MainView; });
+/* harmony import */ var _help_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./help_window */ "./src/help_window.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var MainView = /*#__PURE__*/function () {
+  function MainView() {
+    _classCallCheck(this, MainView);
+
+    // default to false
+    this.mounted = false;
+    this.main = document.createElement("div");
+    this.main.className = "main-div";
+    this.help = new _help_window__WEBPACK_IMPORTED_MODULE_0__["default"]();
+    this.help.appendTo(this.main);
+    this.startMessage = document.createElement("p");
+    this.startMessage.className = 'start-message';
+    this.startMessage.innerHTML = "Press ENTER to start game.";
+    this.main.appendChild(this.startMessage);
+
+    this.enterHandler = function (e) {
+      if (e.key === "Enter") {
+        localStorage.setItem("state", "play");
+      }
+    };
+  }
+
+  _createClass(MainView, [{
+    key: "mount",
+    value: function mount() {
+      if (localStorage.state === 'main' && !this.mounted) {
+        this.mounted = true;
+        document.body.appendChild(this.main);
+        document.addEventListener("keydown", this.enterHandler);
+      }
+    }
+  }, {
+    key: "unmount",
+    value: function unmount() {
+      if (localStorage.state === 'play' && this.mounted) {
+        this.mounted = false;
+        document.body.removeChild(this.main);
+        document.removeEventListener("keydown", this.enterHandler);
+      }
+    }
+  }]);
+
+  return MainView;
+}();
+
+
 
 /***/ }),
 
@@ -1021,6 +1380,68 @@ var Map = /*#__PURE__*/function () {
   }]);
 
   return Map;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/modal.js":
+/*!**********************!*\
+  !*** ./src/modal.js ***!
+  \**********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Modal; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Modal = /*#__PURE__*/function () {
+  function Modal(options) {
+    var _this = this;
+
+    _classCallCheck(this, Modal);
+
+    // default mounted false
+    this.mounted = false;
+    this.type = options.type;
+    this.modal = document.createElement("div");
+    this.modal.className = "modal";
+    this.modal.appendChild(options.window);
+    this.closeButton = document.createElement("i");
+    this.closeButton.className = "material-icons close-button";
+    this.closeButton.innerHTML = "cancel";
+    this.closeButton.addEventListener("click", function (e) {
+      _this.unmount();
+
+      localStorage.setItem('state', 'play');
+    });
+    this.modal.appendChild(this.closeButton);
+  }
+
+  _createClass(Modal, [{
+    key: "unmount",
+    value: function unmount() {
+      document.body.removeChild(this.modal);
+      this.mounted = false;
+    }
+  }, {
+    key: "mount",
+    value: function mount() {
+      if (localStorage.state === this.type && !this.mounted) {
+        document.body.appendChild(this.modal);
+        this.mounted = true;
+      }
+    }
+  }]);
+
+  return Modal;
 }();
 
 
