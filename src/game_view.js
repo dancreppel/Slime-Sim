@@ -2,6 +2,7 @@ import GameOverView from './game_over_view';
 import HUD from './hud';
 import Modal from './modal';
 import HelpWindow from './help_window';
+import MainView from './main_view';
 
 export default class GameView {
   constructor (options) {
@@ -15,6 +16,8 @@ export default class GameView {
     this.canvas.mounted = true;
 
     this.hud = new HUD();
+
+    this.main = new MainView();
 
     // * game over views
     this.loseView = new GameOverView({
@@ -46,8 +49,12 @@ export default class GameView {
     // check 60 times a second
     setInterval(() => {
       switch (localStorage.state) {
+        case 'main':
+          this.main.mount();
+          break;
         case 'play':
           this.play();
+          this.main.unmount();
           this.hud.mountHudButtons();
           break;
         case 'pause':
