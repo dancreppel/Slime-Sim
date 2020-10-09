@@ -1,5 +1,8 @@
 export default class Modal {
   constructor (window) {
+    // default mounted false
+    this.mounted = false;
+
     this.modal = document.createElement("div");
     this.modal.className = "modal";
     this.modal.appendChild(window);
@@ -16,9 +19,13 @@ export default class Modal {
 
   unmount () {
     document.body.removeChild(this.modal);
+    this.mounted = false;
   }
 
   mount () {
-    document.body.appendChild(this.modal);
+    if (localStorage.state === 'pause' && !this.mounted) {
+      document.body.appendChild(this.modal);
+      this.mounted = true;
+    }
   }
 }
