@@ -8,16 +8,20 @@ export default class GameOverView {
     
     // div that houses the game over image and replay button 
     this.gameOverView = document.createElement("div");
-    this.gameOverView.className = "game-over-view"
     
     // instantiate game over image
     this.image = new Image();
-    if (this.type === 'lose') this.image.src = "assets/sprites/gameover.jpg";
-    else this.image.src = "assets/sprites/youwin.jpg"
+    if (this.type === 'lose') {
+      this.image.src = "assets/sprites/gameover.jpg";
+      this.gameOverView.className = "lose-view";
+    } else {
+      this.image.src = "assets/sprites/youwin.jpg"
+      this.gameOverView.className = "win-view";
+    }
     this.image.className = "game-over-image";
 
     // instantiate replay button
-    this.replayButton = document.createElement("button");
+    this.replayButton = document.createElement("div");
     this.replayButton.className = 'replay-button';
     this.replayButton.innerHTML = 'Replay';
     this.replayButton.addEventListener("click", e => {
