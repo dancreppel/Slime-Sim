@@ -32,5 +32,7 @@ export default class GameOverView {
 
   replay () {
     localStorage.setItem('state', 'main');
+    document.body.removeChild(this.gameOverView);
+    this.mounted = false;
   }
 }
