@@ -1,0 +1,20 @@
+.help-button, .pause-button, .sound-button {
+  color: whitesmoke;
+  position: absolute;
+  font-size: 75px;
+}
+
+.help-button {
+  top: 10px;
+  left: 10px;
+}
+
+.pause-button {
+  top: 680px;
+  left: 10px;
+}
+
+.sound-button {
+  top: 680px;
+  left: 1280px;
+}

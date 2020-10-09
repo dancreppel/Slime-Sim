@@ -530,7 +530,7 @@ var Game = /*#__PURE__*/function () {
       // handle keydownfor arrow keys
       document.addEventListener("keydown", function (e) {
         e.preventDefault();
-        var speed = _this.movementSpeed * 2;
+        var speed = _this.movementSpeed;
 
         switch (e.key) {
           case "ArrowUp":
@@ -662,14 +662,21 @@ var GameOverView = /*#__PURE__*/function () {
 
     this.mounted = false; // div that houses the game over image and replay button 
 
-    this.gameOverView = document.createElement("div");
-    this.gameOverView.className = "game-over-view"; // instantiate game over image
+    this.gameOverView = document.createElement("div"); // instantiate game over image
 
     this.image = new Image();
-    if (this.type === 'lose') this.image.src = "assets/sprites/gameover.jpg";else this.image.src = "assets/sprites/youwin.jpg";
+
+    if (this.type === 'lose') {
+      this.image.src = "assets/sprites/gameover.jpg";
+      this.gameOverView.className = "lose-view";
+    } else {
+      this.image.src = "assets/sprites/youwin.jpg";
+      this.gameOverView.className = "win-view";
+    }
+
     this.image.className = "game-over-image"; // instantiate replay button
 
-    this.replayButton = document.createElement("button");
+    this.replayButton = document.createElement("div");
     this.replayButton.className = 'replay-button';
     this.replayButton.innerHTML = 'Replay';
     this.replayButton.addEventListener("click", function (e) {
@@ -751,7 +758,8 @@ var GameView = /*#__PURE__*/function () {
       type: 'help',
       window: this.helpWindow.window
     });
-    this.pauseWindow = document.createElement("p");
+    this.pauseWindow = document.createElement("div");
+    this.pauseWindow.className = "pause-window";
     this.pauseWindow.innerHTML = "Paused";
     this.pauseModal = new _modal__WEBPACK_IMPORTED_MODULE_3__["default"]({
       type: 'pause',
@@ -763,10 +771,13 @@ var GameView = /*#__PURE__*/function () {
   _createClass(GameView, [{
     key: "setup",
     value: function setup() {
+      this.canvasDiv = document.createElement("div");
+      this.canvasDiv.className = "canvas-div";
       var canvas = document.createElement("canvas");
       canvas.className = "canvas";
-      var DIM_X = 1600;
-      var DIM_Y = 900;
+      this.canvasDiv.appendChild(canvas);
+      var DIM_X = 1366;
+      var DIM_Y = 769;
       var ctx = canvas.getContext("2d");
       var movementSpeed = 10;
       canvas.width = DIM_X;
@@ -802,13 +813,13 @@ var GameView = /*#__PURE__*/function () {
 
             _this.playGameOverSound = true;
 
-            _this.hud.mountHudButtons();
-
             _this.game.start();
 
             _this.mountCanvas();
 
             _this.play();
+
+            _this.hud.mountHudButtons();
 
             break;
 
@@ -823,11 +834,11 @@ var GameView = /*#__PURE__*/function () {
             break;
 
           case "win":
-            _this.unmountCanvas();
+            _this.hud.unmountHudButtons();
 
             _this.game.ambientAudio.pause();
 
-            _this.hud.unmountHudButtons();
+            _this.unmountCanvas();
 
             _this.mountGameOverView("win");
 
@@ -838,9 +849,9 @@ var GameView = /*#__PURE__*/function () {
           case "lose":
             _this.game.ambientAudio.pause();
 
-            _this.unmountCanvas();
-
             _this.hud.unmountHudButtons();
+
+            _this.unmountCanvas();
 
             _this.mountGameOverView("lose");
 
@@ -864,7 +875,7 @@ var GameView = /*#__PURE__*/function () {
     key: "mountCanvas",
     value: function mountCanvas() {
       if (!this.game.mounted) {
-        document.body.appendChild(this.game.canvas);
+        document.body.appendChild(this.canvasDiv);
         this.game.mounted = true;
       }
     }
@@ -873,7 +884,7 @@ var GameView = /*#__PURE__*/function () {
     value: function unmountCanvas() {
       // only remove canvas element if it is mounted
       if (this.game.mounted) {
-        document.body.removeChild(this.game.canvas);
+        document.body.removeChild(this.canvasDiv);
         this.game.mounted = false;
       }
     }
@@ -929,10 +940,7 @@ var HelpWindow = /*#__PURE__*/function () {
     _classCallCheck(this, HelpWindow);
 
     this.window = document.createElement("div");
-    this.window.className = "help-window"; // * game description
-
-    this.description = document.createElement("p");
-    this.description.innerHTML = "In this oasis, you live as the weakest" + " creature, a slime.  However, fortune has smiled on you.  Now you can" + " consume your enemies.  Grow until you become the new king of the oasis!"; // * div housing controls image and info
+    this.window.className = "help-window"; // * div housing controls image and info
 
     this.controlsDiv = document.createElement("div");
     this.controlsDiv.className = "controls-div";
@@ -949,9 +957,8 @@ var HelpWindow = /*#__PURE__*/function () {
     this.goal = document.createElement("div");
     this.goal.className = "goal-div";
     this.goalGif = new Image();
-    this.goalGif.className = "goal-gif"; // ! make goal gif
-    // this.goalGif.src = ; 
-
+    this.goalGif.className = "goal-gif";
+    this.goalGif.src = "assets/sprites/consume.gif";
     this.goalInfo = document.createElement("p");
     this.goalInfo.className = "goal-info";
     this.goalInfo.innerHTML = "Consume enemies by absorbing creatures smaller than yourself."; // append gif and info to div
@@ -962,17 +969,15 @@ var HelpWindow = /*#__PURE__*/function () {
     this.warning = document.createElement("div");
     this.warning.className = "warning-div";
     this.warningGif = new Image();
-    this.warningGif.className = "warning-gif"; // ! make warning gif
-
-    this.warningGif.src;
+    this.warningGif.className = "warning-gif";
+    this.warningGif.src = "assets/sprites/lose.gif";
     this.warningInfo = document.createElement("p");
     this.warningInfo.className = "warning-info";
     this.warningInfo.innerHTML = "Be sure to not eat more than you can chew or else you will lose."; // append gif and info to div
 
     this.warning.appendChild(this.warningGif);
-    this.warning.appendChild(this.warningInfo); // * append description, controls, goal, and warning to help window
+    this.warning.appendChild(this.warningInfo); // * append controls, goal, and warning to help window
 
-    this.window.appendChild(this.description);
     this.window.appendChild(this.controlsDiv);
     this.window.appendChild(this.goal);
     this.window.appendChild(this.warning);
@@ -1057,9 +1062,12 @@ var HUD = /*#__PURE__*/function () {
   _createClass(HUD, [{
     key: "mountHudButtons",
     value: function mountHudButtons() {
+      // canvasDiv for mounting hud
+      var canvasDiv = document.getElementsByClassName("canvas-div")[0];
+
       if (this.mounted === false) {
         this.hudButtons.forEach(function (button) {
-          return document.body.appendChild(button);
+          return canvasDiv.appendChild(button);
         });
         this.mounted = true;
       }
@@ -1067,9 +1075,12 @@ var HUD = /*#__PURE__*/function () {
   }, {
     key: "unmountHudButtons",
     value: function unmountHudButtons() {
+      // canvasDiv for mounting hud
+      var canvasDiv = document.getElementsByClassName("canvas-div")[0];
+
       if (this.mounted === true) {
         this.hudButtons.forEach(function (button) {
-          return document.body.removeChild(button);
+          return canvasDiv.removeChild(button);
         });
         this.mounted = false;
       }
@@ -1127,10 +1138,18 @@ var MainView = /*#__PURE__*/function () {
     this.mounted = false;
     this.main = document.createElement("div");
     this.main.className = "main-div";
+    this.welcome = document.createElement("h1");
+    this.welcome.className = "welcome-message";
+    this.welcome.innerHTML = "Welcome to Slime Simulator!";
+    this.main.appendChild(this.welcome); // game description
+
+    this.description = document.createElement("p");
+    this.description.innerHTML = "In this oasis, you live as the weakest" + " creature, a slime.  However, fortune has smiled on you.  Now you can" + " consume your enemies.  Grow until you become the new king of the oasis!";
+    this.main.appendChild(this.description);
     this.help = new _help_window__WEBPACK_IMPORTED_MODULE_0__["default"]();
     this.help.appendTo(this.main);
     this.startMessage = document.createElement("p");
-    this.startMessage.className = 'start-message';
+    this.startMessage.className = "start-message";
     this.startMessage.innerHTML = "Press ENTER to start game.";
     this.main.appendChild(this.startMessage);
 
@@ -1411,9 +1430,10 @@ var Modal = /*#__PURE__*/function () {
     // default mounted false
     this.mounted = false;
     this.type = options.type;
+    this.window = options.window;
     this.modal = document.createElement("div");
     this.modal.className = "modal";
-    this.modal.appendChild(options.window);
+    this.modal.appendChild(this.window);
     this.closeButton = document.createElement("i");
     this.closeButton.className = "material-icons close-button";
     this.closeButton.innerHTML = "cancel";
@@ -1422,7 +1442,7 @@ var Modal = /*#__PURE__*/function () {
 
       localStorage.setItem('state', 'play');
     });
-    this.modal.appendChild(this.closeButton);
+    this.window.appendChild(this.closeButton);
   }
 
   _createClass(Modal, [{

@@ -31,7 +31,8 @@ export default class GameView {
       type: 'help',
       window: this.helpWindow.window
     });
-    this.pauseWindow = document.createElement("p")
+    this.pauseWindow = document.createElement("div")
+    this.pauseWindow.className = "pause-window"
     this.pauseWindow.innerHTML = "Paused";
     this.pauseModal = new Modal({
       type: 'pause',
@@ -42,10 +43,15 @@ export default class GameView {
   }
 
   setup () {
+    this.canvasDiv = document.createElement("div");
+    this.canvasDiv.className = "canvas-div";
+
     const canvas = document.createElement("canvas");
     canvas.className = "canvas";
-    const DIM_X = 1600;
-    const DIM_Y = 900;
+    this.canvasDiv.appendChild(canvas);
+
+    const DIM_X = 1366;
+    const DIM_Y = 769;
     const ctx = canvas.getContext("2d");
     const movementSpeed = 10;
 
@@ -76,10 +82,10 @@ export default class GameView {
         case "play":
           this.main.unmount();
           this.playGameOverSound = true;
-          this.hud.mountHudButtons();
           this.game.start();
           this.mountCanvas();
           this.play();
+          this.hud.mountHudButtons();
           break;
         case "pause":
           this.pauseModal.mount();
@@ -88,16 +94,16 @@ export default class GameView {
           this.helpModal.mount();
           break;
         case "win":
-          this.unmountCanvas();
-          this.game.ambientAudio.pause();
           this.hud.unmountHudButtons();
+          this.game.ambientAudio.pause();
+          this.unmountCanvas();
           this.mountGameOverView("win");
           this.gameOverSound();
           break;
         case "lose":
           this.game.ambientAudio.pause();
-          this.unmountCanvas();
           this.hud.unmountHudButtons();
+          this.unmountCanvas();
           this.mountGameOverView("lose");
           this.gameOverSound();
           break;
@@ -115,7 +121,7 @@ export default class GameView {
 
   mountCanvas () {
     if (!this.game.mounted) {
-      document.body.appendChild(this.game.canvas);
+      document.body.appendChild(this.canvasDiv);
       this.game.mounted = true;
     }
   }
@@ -123,7 +129,7 @@ export default class GameView {
   unmountCanvas () {
     // only remove canvas element if it is mounted
     if (this.game.mounted) {
-      document.body.removeChild(this.game.canvas);
+      document.body.removeChild(this.canvasDiv);
       this.game.mounted = false;
     }
   }

@@ -3,12 +3,6 @@ export default class HelpWindow {
     this.window = document.createElement("div");
     this.window.className = "help-window";
 
-    // * game description
-    this.description = document.createElement("p");
-    this.description.innerHTML = "In this oasis, you live as the weakest" +
-      " creature, a slime.  However, fortune has smiled on you.  Now you can" +
-      " consume your enemies.  Grow until you become the new king of the oasis!";
-
     // * div housing controls image and info
     this.controlsDiv = document.createElement("div");
     this.controlsDiv.className = "controls-div";
@@ -30,8 +24,7 @@ export default class HelpWindow {
     this.goal.className = "goal-div";
     this.goalGif = new Image();
     this.goalGif.className = "goal-gif";
-    // ! make goal gif
-    // this.goalGif.src = ; 
+    this.goalGif.src = "assets/sprites/consume.gif"; 
     this.goalInfo = document.createElement("p");
     this.goalInfo.className = "goal-info";
     this.goalInfo.innerHTML = "Consume enemies by absorbing creatures smaller than yourself."
@@ -44,8 +37,7 @@ export default class HelpWindow {
     this.warning.className = "warning-div";
     this.warningGif = new Image();
     this.warningGif.className = "warning-gif";
-    // ! make warning gif
-    this.warningGif.src;
+    this.warningGif.src = "assets/sprites/lose.gif";
     this.warningInfo = document.createElement("p");
     this.warningInfo.className = "warning-info";
     this.warningInfo.innerHTML = "Be sure to not eat more than you can chew or else you will lose."
@@ -53,8 +45,7 @@ export default class HelpWindow {
     this.warning.appendChild(this.warningGif);
     this.warning.appendChild(this.warningInfo);
 
-    // * append description, controls, goal, and warning to help window
-    this.window.appendChild(this.description);
+    // * append controls, goal, and warning to help window
     this.window.appendChild(this.controlsDiv);
     this.window.appendChild(this.goal);
     this.window.appendChild(this.warning);
