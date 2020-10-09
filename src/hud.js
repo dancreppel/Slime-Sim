@@ -44,15 +44,19 @@ export default class HUD {
   }
 
   mountHudButtons () {
+    // canvasDiv for mounting hud
+    let canvasDiv = document.getElementsByClassName("canvas-div")[0];
     if (this.mounted === false) {
-      this.hudButtons.forEach(button => document.body.appendChild(button));
+      this.hudButtons.forEach((button) => canvasDiv.appendChild(button));
       this.mounted = true;
     }
   }
 
   unmountHudButtons () {
+    // canvasDiv for mounting hud
+    let canvasDiv = document.getElementsByClassName("canvas-div")[0];
     if (this.mounted === true) {
-      this.hudButtons.forEach(button => document.body.removeChild(button));
+      this.hudButtons.forEach((button) => canvasDiv.removeChild(button));
       this.mounted = false;
     }
   }
