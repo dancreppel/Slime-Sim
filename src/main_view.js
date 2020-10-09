@@ -8,6 +8,11 @@ export default class MainView {
     this.main = document.createElement("div");
     this.main.className = "main-div";
 
+    this.welcome = document.createElement("h1");
+    this.welcome.className = "welcome-message";
+    this.welcome.innerHTML = "Welcome to Slime Simulator!";
+    this.main.appendChild(this.welcome);
+
     this.help = new HelpWindow();
     this.help.appendTo(this.main);
 
