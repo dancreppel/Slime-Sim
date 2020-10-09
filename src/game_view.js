@@ -31,7 +31,8 @@ export default class GameView {
       type: 'help',
       window: this.helpWindow.window
     });
-    this.pauseWindow = document.createElement("p")
+    this.pauseWindow = document.createElement("div")
+    this.pauseWindow.className = "pause-window"
     this.pauseWindow.innerHTML = "Paused";
     this.pauseModal = new Modal({
       type: 'pause',
@@ -92,16 +93,16 @@ export default class GameView {
           this.helpModal.mount();
           break;
         case "win":
-          this.unmountCanvas();
-          this.game.ambientAudio.pause();
           this.hud.unmountHudButtons();
+          this.game.ambientAudio.pause();
+          this.unmountCanvas();
           this.mountGameOverView("win");
           this.gameOverSound();
           break;
         case "lose":
           this.game.ambientAudio.pause();
-          this.unmountCanvas();
           this.hud.unmountHudButtons();
+          this.unmountCanvas();
           this.mountGameOverView("lose");
           this.gameOverSound();
           break;
