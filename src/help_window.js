@@ -59,4 +59,8 @@ export default class HelpWindow {
     this.window.appendChild(this.goal);
     this.window.appendChild(this.warning);
   }
+
+  appendTo (parent) {
+    parent.appendChild(this.window);
+  }
 }
