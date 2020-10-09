@@ -3,12 +3,6 @@ export default class HelpWindow {
     this.window = document.createElement("div");
     this.window.className = "help-window";
 
-    // * game description
-    this.description = document.createElement("p");
-    this.description.innerHTML = "In this oasis, you live as the weakest" +
-      " creature, a slime.  However, fortune has smiled on you.  Now you can" +
-      " consume your enemies.  Grow until you become the new king of the oasis!";
-
     // * div housing controls image and info
     this.controlsDiv = document.createElement("div");
     this.controlsDiv.className = "controls-div";
@@ -53,8 +47,7 @@ export default class HelpWindow {
     this.warning.appendChild(this.warningGif);
     this.warning.appendChild(this.warningInfo);
 
-    // * append description, controls, goal, and warning to help window
-    this.window.appendChild(this.description);
+    // * append controls, goal, and warning to help window
     this.window.appendChild(this.controlsDiv);
     this.window.appendChild(this.goal);
     this.window.appendChild(this.warning);
