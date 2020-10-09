@@ -42,10 +42,15 @@ export default class GameView {
   }
 
   setup () {
+    this.canvasDiv = document.createElement("div");
+    this.canvasDiv.className = "canvas-div";
+
     const canvas = document.createElement("canvas");
     canvas.className = "canvas";
-    const DIM_X = 1600;
-    const DIM_Y = 900;
+    this.canvasDiv.appendChild(canvas);
+
+    const DIM_X = 1366;
+    const DIM_Y = 769;
     const ctx = canvas.getContext("2d");
     const movementSpeed = 10;
 
@@ -75,10 +80,10 @@ export default class GameView {
         case "play":
           this.main.unmount();
           this.playGameOverSound = true;
-          this.hud.mountHudButtons();
           this.game.start();
           this.mountCanvas();
           this.play();
+          this.hud.mountHudButtons();
           break;
         case "pause":
           this.pauseModal.mount();
@@ -114,7 +119,7 @@ export default class GameView {
 
   mountCanvas () {
     if (!this.game.mounted) {
-      document.body.appendChild(this.game.canvas);
+      document.body.appendChild(this.canvasDiv);
       this.game.mounted = true;
     }
   }
@@ -122,7 +127,7 @@ export default class GameView {
   unmountCanvas () {
     // only remove canvas element if it is mounted
     if (this.game.mounted) {
-      document.body.removeChild(this.game.canvas);
+      document.body.removeChild(this.canvasDiv);
       this.game.mounted = false;
     }
   }
