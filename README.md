@@ -1,7 +1,7 @@
 # [Slime-Sim](https://dancreppel.github.io/Slime-Sim/) <img src="assets/images/logo.png" width="25" height="25" />
 
 ## Background
-Start as the weakest monster, a slime.  But you do not have to stay as the weakest creature.  Climb the monster food chain by consuming other creatures and inherit their abilities and stats.  This game is a top down simulator.  Move around the map using your directional keys.  Use abilities to fight and consume enemies.
+Start as the weakest monster, a slime.  However, you do not have to stay as the weakest creature.  Climb the monster food chain by consuming other creatures.  This game is a top down simulator.  Move around the map using your directional keys and eat those smaller than yourself.
 
 ## Functionality & MVPs
 - [x] Main menu
