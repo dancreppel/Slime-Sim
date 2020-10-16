@@ -152,7 +152,7 @@ var Creature = /*#__PURE__*/function (_Entity) {
     _this.movementDir = "";
     _this.moveDirs = ["up", "down", "left", "right"];
     return _this;
-  } // // ! for testing
+  } // ! for testing
   // draw(ctx) {
   //   ctx.drawImage(
   //     this.image,
@@ -288,18 +288,23 @@ var Entity = /*#__PURE__*/function () {
     key: "hitboxRadius",
     value: function hitboxRadius() {
       return this.dim[0] < this.dim[1] ? this.dim[0] / 2 : this.dim[1] / 2;
-    } // // ! for testing
+    } // ! for testing
+    // drawHitbox() {
+    //   const canvas = document.getElementById("canvas");
+    //   const ctx = canvas.getContext("2d");
+    //   ctx.beginPath();
+    //   ctx.arc(
+    //     this.hitboxCenter[0],
+    //     this.hitboxCenter[1],
+    //     this.hitboxRadius,
+    //     0,
+    //     2 * Math.PI,
+    //     false
+    //   );
+    //   ctx.stroke();
+    //   return true;
+    // }
 
-  }, {
-    key: "drawHitbox",
-    value: function drawHitbox() {
-      var canvas = document.getElementById("canvas");
-      var ctx = canvas.getContext("2d");
-      ctx.beginPath();
-      ctx.arc(this.hitboxCenter[0], this.hitboxCenter[1], this.hitboxRadius, 0, 2 * Math.PI, false);
-      ctx.stroke();
-      return true;
-    }
   }, {
     key: "isCollision",
     value: function isCollision(entity) {

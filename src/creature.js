@@ -14,7 +14,7 @@ export default class Creature extends Entity {
     this.moveDirs = ["up", "down", "left", "right"];
   }
 
-  // // ! for testing
+  // ! for testing
   // draw(ctx) {
   //   ctx.drawImage(
   //     this.image,
