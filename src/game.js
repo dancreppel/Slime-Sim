@@ -59,10 +59,10 @@ export default class Game {
 
   generateEnemies () {
     let creatures = {
-      mouse: { dim: 25, src: "assets/sprites/mouse", num: 25 },
-      lion: { dim: 50, src: "assets/sprites/lion", num: 20 },
-      bear: { dim: 100, src: "assets/sprites/bear", num: 20 },
-      dino: { dim: 200, src: "assets/sprites/dino", num: 10 },
+      mouse: { dim: 25, src: "assets/sprites/mouse", num: 30 },
+      lion: { dim: 50, src: "assets/sprites/lion", num: 25 },
+      bear: { dim: 100, src: "assets/sprites/bear", num: 25 },
+      dino: { dim: 200, src: "assets/sprites/dino", num: 15 },
       boss: { dim: 400, src: "assets/sprites/golem", num: 1 },
     };
 
