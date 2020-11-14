@@ -419,22 +419,22 @@ var Game = /*#__PURE__*/function () {
         mouse: {
           dim: 25,
           src: "assets/sprites/mouse",
-          num: 20
+          num: 30
         },
         lion: {
           dim: 50,
           src: "assets/sprites/lion",
-          num: 16
+          num: 25
         },
         bear: {
           dim: 100,
           src: "assets/sprites/bear",
-          num: 12
+          num: 25
         },
         dino: {
           dim: 200,
           src: "assets/sprites/dino",
-          num: 8
+          num: 15
         },
         boss: {
           dim: 400,
