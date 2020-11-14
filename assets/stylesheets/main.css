@@ -1,6 +1,7 @@
 body {
   background-color: black;
   display: flex;
+  flex-direction: column;
   font-family: "Press Start 2P", cursive;
   position: relative;
   height: 98vh;
