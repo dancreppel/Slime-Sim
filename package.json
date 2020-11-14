@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "webpack": "webpack --mode=development --watch"
+    "webpack": "webpack --mode=development --watch",
+    "scss" : "sass --watch assets/stylesheets/main.scss assets/stylesheets/main.css"
   },
   "repository": {
     "type": "git",
