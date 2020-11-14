@@ -1,8 +1,10 @@
 body {
   background-color: black;
   display: flex;
+  flex-direction: column;
   font-family: "Press Start 2P", cursive;
   position: relative;
+  height: 98vh;
 }
 
 .main-div {
@@ -31,6 +33,13 @@ body {
 .canvas-div {
   margin: auto;
   position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.canvas {
+  height: 100%;
+  width: 100%;
 }
 
 .help-button, .pause-button, .sound-button {
@@ -40,18 +49,18 @@ body {
 }
 
 .help-button {
-  top: 10px;
-  left: 10px;
+  top: 1%;
+  left: 1%;
 }
 
 .pause-button {
-  top: 680px;
-  left: 10px;
+  bottom: 1%;
+  left: 1%;
 }
 
 .sound-button {
-  top: 680px;
-  left: 1280px;
+  bottom: 1%;
+  right: 1%;
 }
 
 .modal {
@@ -118,6 +127,17 @@ body {
 
 .win-view {
   background-color: #091F3A;
+}
+
+nav {
+  margin: auto;
+  padding: 10px;
+}
+nav a:link {
+  color: blue;
+}
+nav a:visited {
+  color: blueviolet;
 }
 
 /*# sourceMappingURL=main.css.map */

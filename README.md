@@ -20,7 +20,7 @@ Start as the weakest monster, a slime.  However, you do not have to stay as the 
   - [x] Sound effects
 
 # UML
-<img src='assets/UML/Slime_Sim_UML.png' alt='UML' width='900' height='800' >
+<img src='assets/UML/Slime_Sim_UML.png' alt='UML' width='100%' >
 
 # Features
 ## **Game View**
